@@ -94,8 +94,12 @@ public class Node {
 		if(msgType == MessageType.ABORT) {
 			setLocked(false);
 		}
-		else if(msgType == MessageType.VOTE_RESPONSE)
-			this.voteResponseCount++;
+		else if(msgType == MessageType.VOTE_RESPONSE) {
+			synchronized (Lock.getLockObject()) {
+				this.voteResponseCount++;
+				Lock.getLockObject().notifyAll();
+			}
+		}
 		else
 			msgQueue.add(msg);
 	}
@@ -134,14 +138,16 @@ public class Node {
 	public void waitforVoteResponses() {
 		int numberOfGrants = this.uIDofNeighbors.size();
 		System.out.println("Waiting For Vote Responses");
-		while(numberOfGrants != this.voteResponseCount){
-			try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		synchronized (Lock.getLockObject()) {
+			while (numberOfGrants != this.voteResponseCount) {
+				try {
+					Lock.getLockObject().wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}
+
 	}
 
 	public void waitForCommitMessage(){
