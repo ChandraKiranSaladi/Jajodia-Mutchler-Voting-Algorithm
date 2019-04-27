@@ -24,7 +24,7 @@ public class TCPServer {
 			serversocket = new ServerSocket(PortNumber);
 		} catch (IOException e) {
 			// System.out.println("Could not listen on port 4444");
-			System.out.println(e);
+			e.printStackTrace();
 			System.exit(-1);
 		}
 		while (true) {
