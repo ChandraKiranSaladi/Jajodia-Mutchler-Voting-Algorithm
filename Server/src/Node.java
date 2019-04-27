@@ -143,4 +143,8 @@ public class Node {
 			}
 		}
 	}
+
+	public void waitForCommitMessage(){
+		// TODO: Waits for Commit message from the coordinator
+	}
 }

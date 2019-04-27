@@ -9,11 +9,25 @@ public class FileRequestAccess {
 	int csEntryCount = 0;
 	int quorumNumber;
 
+
 	public FileRequestAccess(Node _dsNode) {
 		this.dsNode = _dsNode;
 	}
 
 	public void InitiateAlgorithm() {
+		
+		dsNode.waitforVoteResponses();
+		if(!isDistinguished()){
+			dsNode.setLocked(false);
+			dsNode.sendMessageToNeighbors(MessageType.ABORT);
+			continue;
+		}
+		else {
+			Catch_Up();
+			dsNode.waitForCommitMessage();
+			Do_Update();
+		}
+
 
 		// while (this.csEntryCount < 20) {
 
@@ -82,7 +96,6 @@ public class FileRequestAccess {
 
 	public boolean isDistinguished() {
 		// TODO: Check whether the current partition is a distinguished one 
-		dsNode.waitforVoteResponses();
 		// 
 		return false;
 	}
