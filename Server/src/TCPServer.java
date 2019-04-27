@@ -27,7 +27,7 @@ public class TCPServer {
 			e.printStackTrace();
 			System.exit(-1);
 		}
-		while (true) {
+		while (!Thread.interrupted()) {
 			TCPClient reqHandler;
 			try {
 				// server.accept returns a client connection

@@ -1,6 +1,5 @@
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Date;
 import java.util.Random;
 
 public class FileRequestAccess {
@@ -15,35 +14,29 @@ public class FileRequestAccess {
 	}
 
 	public void InitiateAlgorithm() {
-		
-		dsNode.waitforVoteResponses();
-		if(!isDistinguished()){
-			dsNode.setLocked(false);
-			dsNode.sendMessageToNeighbors(MessageType.ABORT);
-			continue;
-		}
-		else {
-			Catch_Up();
-			dsNode.waitForCommitMessage();
-			Do_Update();
-		}
-
-
-		// while (this.csEntryCount < 20) {
-
-		// 	try {
-		// 		Thread.sleep(new Random().nextInt(500)+ 500);
-		// 	} catch (InterruptedException e) {
-		// 		e.printStackTrace();
-		// 	}
-
-		// 	Request_Resource();
-		// 	CriticalSection();
-		// 	Release_Resource();
-
-
-		// }
-		// dsNode.sendCompletion();
+		//TODO: Wait for LOCK_REQUEST from S0
+		synchronized (Lock.getLockObject()){
+		    while (dsNode.isLock()){
+                try {
+                    Lock.getLockObject().wait();
+                    dsNode.waitingRequest = false;
+                    dsNode.sendMessageToNeighbors(MessageType.VOTE_REQUEST);
+                    dsNode.waitforVoteResponses();
+                    if(!isDistinguished()){
+                        dsNode.setLock(false);
+                        dsNode.sendMessageToNeighbors(MessageType.ABORT);
+                        continue;
+                    }
+                    boolean hasCurrent = Catch_Up();
+                    if(!hasCurrent){
+                        //TODO: Change version number to the latest
+                    }
+                    Do_Update();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 	}
 
 	private int getRandomNumber(int number) {
@@ -100,11 +93,13 @@ public class FileRequestAccess {
 		return false;
 	}
 
-	public void Catch_Up() {
+	public boolean Catch_Up() {
 		// TODO: Update the outdated copy in your Server with a more recent one
+	    return false;
 	}
 
 	public void Do_Update(){
+	    dsNode.sendMessageToNeighbors(MessageType.COMMIT);
 		// TODO: Sites commit the update
 	}
 }

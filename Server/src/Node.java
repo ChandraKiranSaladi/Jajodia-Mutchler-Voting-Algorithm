@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,6 +10,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 
 public class Node {
+	public boolean waitingRequest;
 	int UID, port;
 	String filePath;
 	String HostName;
@@ -19,7 +19,8 @@ public class Node {
 	ServerSocket serverSocket;
 	Map<Integer,TCPClient> connectedClients = (Map<Integer, TCPClient>) Collections.synchronizedMap(new HashMap<Integer,TCPClient>());
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-	private boolean isLocked = false;
+	private LockManager lockManager;
+	private boolean lock = false;
 	public int VN, RU;
 	public String DS;
 	public int maxVersionNumberinPartition;
@@ -27,6 +28,7 @@ public class Node {
 	private int voteResponseCount = 0;
 	
 	public Node(int UID, int port, String hostName, HashMap<Integer, NeighbourNode> uIDofNeighbors) {
+		this.waitingRequest = false;
 		this.UID = UID;
 		this.port = port;
 		this.HostName = hostName;
@@ -35,6 +37,7 @@ public class Node {
 		this.VN = 0;
 		this.RU = uIDofNeighbors.size();
 		this.DS = "";
+		this.lockManager = new LockManager();
 	}
 
 	public Node() {
@@ -92,7 +95,7 @@ public class Node {
 	synchronized public void messageHandler(Message msg) {
 		MessageType msgType = msg.getMsgType();
 		if(msgType == MessageType.ABORT) {
-			setLocked(false);
+			setLock(false);
 		}
 		else if(msgType == MessageType.VOTE_RESPONSE) {
 			synchronized (Lock.getLockObject()) {
@@ -123,12 +126,12 @@ public class Node {
 		return msg;
 	}
 
-	synchronized public boolean isLocked() {
-		return this.isLocked;
+	synchronized public boolean isLock() {
+		return this.lock;
 	}
 
-	synchronized public void setLocked( boolean val){
-		this.isLocked = val;
+	synchronized public void setLock(boolean val){
+		this.lock = val;
 	}
 
 	public String getMyTimeStamp() {
@@ -146,6 +149,7 @@ public class Node {
 					e.printStackTrace();
 				}
 			}
+			this.voteResponseCount = 0;
 		}
 
 	}

@@ -53,7 +53,7 @@ public class TCPClient extends Thread{
 			System.exit(-1);
 		}
 
-		while (true) {
+		while (!Thread.interrupted()) {
 			try {
 				// Read data from client
 
