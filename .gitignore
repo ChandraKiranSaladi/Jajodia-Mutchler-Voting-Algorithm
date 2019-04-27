@@ -1,1 +1,5 @@
 Server/bin/*
+.vscode
+.idea
+.DS_Store
+*.iml
