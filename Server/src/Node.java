@@ -134,7 +134,7 @@ public class Node {
 	public void waitforVoteResponses() {
 		int numberOfGrants = this.uIDofNeighbors.size();
 		System.out.println("Waiting For Vote Responses");
-		while(numberOfGrants != this.voteResponseCount)
+		while(numberOfGrants != this.voteResponseCount){
 			try {
 				Thread.sleep(1);
 			} catch (InterruptedException e) {

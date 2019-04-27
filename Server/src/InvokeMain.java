@@ -65,10 +65,8 @@ public class InvokeMain {
 	public static Node BuildNode(int hostNumIndex) {
 		Node dsNode = new Node();
 		try {
-			dsNode = ParseConfigFile.read(
-					"C:\\Users\\kiran\\OneDrive - The University of Texas at Dallas\\"
-					+ "CS 6378 ( Advanced Operating Systems )\\Projects\\"
-					+ "Tree Based Quorum\\Client\\src\\readFile.txt",
+			String configFilePath = System.getenv("CONFIG_PATH");
+			dsNode = ParseConfigFile.read(configFilePath,
 							InetAddress.getLocalHost().getHostName(), hostNumIndex);
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to get nodeList", e);
