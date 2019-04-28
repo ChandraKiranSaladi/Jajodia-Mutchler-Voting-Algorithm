@@ -1,7 +1,6 @@
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -23,12 +22,10 @@ public class Node {
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	private LockManager lockManager;
 	private boolean lock = false;
-	public int VN, RU;
+	public int VN, SC;
 	public String DS;
-	public int maxVersionNumberinPartition;
-	HashSet<Integer> I = new HashSet<>();
 	private int voteResponseCount = 0;
-	public List<Message> voteResponseMessages;
+	public HashMap<Integer,Message> voteResponseMessages;
 	
 	public Node(int UID, int port, String hostName, HashMap<Integer, NeighbourNode> uIDofNeighbors) {
 		this.waitingRequest = false;
@@ -38,10 +35,10 @@ public class Node {
 		this.uIDofNeighbors = uIDofNeighbors;
 		this.msgQueue = new PriorityBlockingQueue<Message>();
 		this.VN = 0;
-		this.RU = uIDofNeighbors.size();
+		this.SC = uIDofNeighbors.size();
 		this.DS = "";
 		this.lockManager = new LockManager();
-		this.voteResponseMessages = new LinkedList<>();
+		this.voteResponseMessages = new HashMap<>();
 	}
 
 	public Node() {
@@ -104,7 +101,7 @@ public class Node {
 		else if(msgType == MessageType.VOTE_RESPONSE) {
 			synchronized (Lock.getLockObject()) {
 				this.voteResponseCount++;
-				voteResponseMessages.add(msg);
+				voteResponseMessages.put(msg.getsenderUID(),msg);
 				Lock.getLockObject().notifyAll();
 			}
 		}

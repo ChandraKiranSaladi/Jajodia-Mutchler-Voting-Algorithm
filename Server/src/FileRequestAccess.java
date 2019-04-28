@@ -1,13 +1,18 @@
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 public class FileRequestAccess {
 
 	Node dsNode;
 	int csEntryCount = 0;
 	int quorumNumber;
-
+    private int M;
+    private int N;
+    private HashSet<Integer> I;
+    private HashSet<Integer> P;
 
 	public FileRequestAccess(Node _dsNode) {
 		this.dsNode = _dsNode;
@@ -115,7 +120,7 @@ public class FileRequestAccess {
 		try {
 			fileWriter = new FileWriter(dsNode.filePath,true);
 			fileWriter.write("Entering, timeStamp: "+ dsNode.getMyTimeStamp()
-					+" VN: "+dsNode.VN + " RU: "+dsNode.RU+ " DS: " +dsNode.DS);
+					+" VN: "+dsNode.VN + " SC: "+dsNode.SC + " DS: " +dsNode.DS);
 			fileWriter.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -123,7 +128,7 @@ public class FileRequestAccess {
 	}
 
 	public boolean isDistinguished() {
-		/* TODO: Check whether the current partition is a distinguished one 
+		/*
 		P = neighbors + me
 		M = max ( VN )
 		I = set of max VN
@@ -137,10 +142,39 @@ public class FileRequestAccess {
 		else if( N == 3)
 			P contains 2 or 3 in DS(I) ( IN this case count(I) == 1)
 			return true
-		*/
-
-		// else
+		else
 			return false;
+		*/
+		Set<Integer> P = new HashSet<>(dsNode.uIDofNeighbors.keySet());
+		I = new HashSet<>();
+		P.add(dsNode.UID);
+		M = dsNode.VN;
+        for (Message msg : dsNode.voteResponseMessages.values()) {
+            if(M<msg.getVersionNumber()){
+                M = msg.getVersionNumber();
+            }
+        }
+        N = dsNode.SC;
+        Message memberOfIMsg = null;
+        for (Message msg:dsNode.voteResponseMessages.values()) {
+            if(msg.getVersionNumber() == M){
+                I.add(msg.getsenderUID());
+                memberOfIMsg = msg;
+            }
+        }
+        N = memberOfIMsg==null?dsNode.UID:memberOfIMsg.getSC();
+        if(I.size() > N/2)
+			 return true;
+		else if(I.size() == N/2)
+			if( I.containsAll(memberOfIMsg.DS))
+				return true;
+		else if( N == 3) {
+		    Set<Integer> PunionI = new HashSet<Integer>(memberOfIMsg.DS);
+            PunionI.retainAll(I);
+		    if(PunionI.size()>=2)
+                return true;
+		}
+		return false;
 	}
 
 	public boolean Catch_Up() {
