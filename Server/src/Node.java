@@ -1,8 +1,7 @@
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.io.IOException;
 import java.net.*;
@@ -23,7 +22,7 @@ public class Node {
 	private LockManager lockManager;
 	private boolean lock = false;
 	public int VN, SC;
-	public String DS;
+	public HashSet<Integer> DS;
 	private int voteResponseCount = 0;
 	public HashMap<Integer,Message> voteResponseMessages;
 	
@@ -36,7 +35,7 @@ public class Node {
 		this.msgQueue = new PriorityBlockingQueue<Message>();
 		this.VN = 0;
 		this.SC = uIDofNeighbors.size();
-		this.DS = "";
+		this.DS = new HashSet<>();
 		this.lockManager = new LockManager();
 		this.voteResponseMessages = new HashMap<>();
 	}
@@ -60,7 +59,9 @@ public class Node {
 		}
 	}
 
-	
+	public LockManager getLockManager(){
+		return this.lockManager;
+	}
 
 	public void attachServerSocket(ServerSocket serverSocket) {
 		this.serverSocket = serverSocket;
@@ -104,6 +105,13 @@ public class Node {
 				voteResponseMessages.put(msg.getsenderUID(),msg);
 				Lock.getLockObject().notifyAll();
 			}
+		}
+		else if(msgType == MessageType.COMMIT){
+			this.DS = msg.getDS();
+			this.VN = msg.getVersionNumber();
+			this.SC = msg.getSC();
+			System.out.println("VN = "+ this.VN + " SC = "+ this.SC);
+			lockManager.releaseRequest();
 		}
 		else
 			msgQueue.add(msg);

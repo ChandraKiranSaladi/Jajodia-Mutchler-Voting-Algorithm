@@ -1,5 +1,6 @@
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 
 public class Message  implements Serializable, Comparable<Message>{
 	
@@ -9,14 +10,14 @@ public class Message  implements Serializable, Comparable<Message>{
 	private MessageType msgType;
 	private int versionNumber = 0;
 	private int SC = 8;
-	String DS = "";
+	private HashSet<Integer> DS;
 
 	public Message(int senderUID, MessageType msgType) {
 		this.senderUID = senderUID;
 		this.msgType = msgType;
 	}
 	
-	public Message(Date timeStamp, int senderUID, MessageType messageType, int VersionNumber, int SC, String DS ) {
+	public Message(Date timeStamp, int senderUID, MessageType messageType, int VersionNumber, int SC, HashSet<Integer> DS ) {
 		this.timeStamp = timeStamp;
 		this.senderUID = senderUID;
 		this.msgType = messageType;
@@ -53,7 +54,7 @@ public class Message  implements Serializable, Comparable<Message>{
 		return this.SC;
 	}
 
-	public String getDS(){
+	public HashSet<Integer> getDS(){
 		return this.DS;
 	}
 
