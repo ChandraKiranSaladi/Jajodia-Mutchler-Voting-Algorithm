@@ -11,19 +11,16 @@ public class FileRequestAccess {
 	Node dsNode;
 	private int M;
 	private int N;
-	private int SC;
 	private HashSet<Integer> I;
 	private HashSet<Integer> P;
-	private HashSet<Integer> DS;
 
-	public FileRequestAccess(Node _dsNode) {
+    public FileRequestAccess(Node _dsNode) {
 		this.dsNode = _dsNode;
 		this.M = 0;
-		this.SC = dsNode.uIDofNeighbors.size();
-		this.DS = new HashSet<>();
+        HashSet<Integer> DS = new HashSet<>();
 	}
 
-	public void InitiateAlgorithm() {
+	public void InitiateAlgorithm() throws InterruptedException {
 		/*
 		 * Receive Request from S0 Set lock = true send vote request Master = true wait
 		 * for responses if( received vote request) Master = false; set lock = true send
@@ -44,6 +41,7 @@ public class FileRequestAccess {
 		 */
 
 		synchronized (Lock.getLockObject()) {
+		    dsNode.getLockManager().lockRequest();
 			dsNode.voteResponseMessages.clear();
 			dsNode.sendMessageToNeighbors(MessageType.VOTE_REQUEST);
 			dsNode.waitforVoteResponses();
@@ -51,49 +49,12 @@ public class FileRequestAccess {
 			if (!isDistinguished()) {
 				dsNode.setLock(false);
 				dsNode.sendMessageToNeighbors(MessageType.ABORT);
+				dsNode.getLockManager().releaseRequest();
 				return;
 			}
 			Catch_Up();
 			Do_Update();
 		}
-	}
-
-	private int getRandomNumber(int number) {
-		return 1 + new Random().nextInt(number);
-	}
-
-	public void Request_Resource() {
-		// dsNode.messageGrantCount = 0;
-		// dsNode.csStart = new Date();
-		// dsNode.tempMessageCount = dsNode.sentMessageCount +
-		// dsNode.receivedMessageCount;
-		// this.quorumNumber = getRandomNumber(dsNode.quorums.size());
-		// System.out.println("Sending Request to Quorum: "+quorumNumber);
-		// dsNode.sendMessageToQuorum(quorumNumber,MessageType.Request,
-		// this.csEntryCount);
-		// dsNode.waitforGrantFromQuorum(quorumNumber);
-
-	}
-
-	synchronized private void CriticalSection() {
-		// dsNode.latency[this.csEntryCount-1] = new Date().getTime() -
-		// dsNode.csStart.getTime();
-		// dsNode.messageCountCS[this.csEntryCount-1] = dsNode.sentMessageCount+
-		// dsNode.receivedMessageCount - dsNode.tempMessageCount;
-		System.out.println("IN Critical Section folks at:" + dsNode.getMyTimeStamp());
-		// Write();
-		// try {
-		// Thread.sleep(300);
-		// } catch (InterruptedException e) {
-		// e.printStackTrace();
-		// }
-		System.out.println("Exiting the Critical Section");
-
-	}
-
-	public void Release_Resource() {
-		// System.out.println("Resource Released");
-		// dsNode.sendMessageToQuorum(this.quorumNumber, MessageType.Release, -1);
 	}
 
 	public void Write() {
@@ -156,7 +117,7 @@ public class FileRequestAccess {
 	}
 
 	public void Do_Update() {
-		int sizeofP = dsNode.uIDofNeighbors.size();
+		int sizeofP = P.size();
 		int VNi = this.M + 1;
 		if (N == 3 && sizeofP == 2)
 			return;
@@ -174,7 +135,6 @@ public class FileRequestAccess {
 		 * VN = M + 1 if( N ==3 && card(P) == 2) return; else VN = M + 1 SC = size(P) DS
 		 * = { least UID in P if( size(p) is even) set(P) if size(P) = 3 }
 		 */
-
 		dsNode.sendMessageToNeighbors(MessageType.COMMIT);
 		dsNode.getLockManager().releaseRequest();
 	}
