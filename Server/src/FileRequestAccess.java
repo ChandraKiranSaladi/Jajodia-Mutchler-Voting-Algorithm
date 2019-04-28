@@ -14,7 +14,42 @@ public class FileRequestAccess {
 	}
 
 	public void InitiateAlgorithm() {
-		//TODO: Wait for LOCK_REQUEST from S0
+	/*
+	 	Receive Request from S0
+		Set lock = true
+		send vote request	
+		Master = true						
+		wait for responses 								if( received vote request)
+														Master = false;
+														set lock = true
+														send vote responses
+														waits for any other message
+
+		!is_Distinguished()								
+		set lock = false
+		send abort
+
+														if  received abort
+														 set lock = false
+		
+		is Distinguished = true
+			Catch_Up()
+				if S does not belong to Set I 
+				set recent copy from any site in I 
+				to your copy
+
+			Do_ Update(Master)											
+				sets the recent version commits
+				send commit message along with all the
+				values ( all missing or just recent )	
+														Do_Update(!Master)
+														if commit message received, 
+														updates the values
+														releases lock
+
+				 
+	*/
+
 		synchronized (Lock.getLockObject()){
 		    while (dsNode.isLock()){
                 try {
@@ -88,9 +123,23 @@ public class FileRequestAccess {
 	}
 
 	public boolean isDistinguished() {
-		// TODO: Check whether the current partition is a distinguished one 
-		// 
-		return false;
+		/* TODO: Check whether the current partition is a distinguished one 
+		P = neighbors + me
+		M = max ( VN )
+		I = set of max VN
+		N = SC(any site in I)
+		if( count(I) > N/2)
+			 return true
+		else if( count(I) == N/2)
+			let any one site in I be X
+			if( I.contains(DS(X)))
+				return true
+		else if( N == 3)
+			P contains 2 or 3 in DS(I) ( IN this case count(I) == 1)
+			return true
+		*/
+		else
+			return false;
 	}
 
 	public boolean Catch_Up() {
@@ -99,7 +148,21 @@ public class FileRequestAccess {
 	}
 
 	public void Do_Update(){
+		/*
+		VN = M + 1
+		if( N ==3 && card(P) == 2)
+			return;
+		else
+			VN = M + 1
+			SC = size(P)
+			DS = {
+				least UID in P	if( size(p) is even)
+				set(P)  		if size(P) = 3
+			}
+		*/
 	    dsNode.sendMessageToNeighbors(MessageType.COMMIT);
 		// TODO: Sites commit the update
+
+		
 	}
 }

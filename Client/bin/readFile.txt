@@ -1,0 +1,20 @@
+# Nodes
+7
+# UID    Hostname    Port
+   1     localhost   3224
+   2     localhost   3225
+   3     localhost   3226
+   4     localhost   3227
+   5     localhost   3228   
+   6     localhost   3229
+   7     localhost   3230
+
+# Server Neighbors Count
+5
+
+# Node neighbors
+	1	2	3	4	5	6	7
+	2	
+	3	
+	4	
+	5		
