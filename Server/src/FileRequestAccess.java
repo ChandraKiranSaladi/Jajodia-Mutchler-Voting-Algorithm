@@ -68,10 +68,7 @@ public class FileRequestAccess {
                         dsNode.sendMessageToNeighbors(MessageType.ABORT);
                         return;
                     }
-                    boolean hasCurrent = Catch_Up();
-                    if(!hasCurrent){
-                        //TODO: Change version number to the latest
-                    }
+                    Catch_Up();
                     Do_Update();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -177,9 +174,11 @@ public class FileRequestAccess {
 		return false;
 	}
 
-	public boolean Catch_Up() {
+	public void Catch_Up() {
 		// TODO: Update the outdated copy in your Server with a more recent one
-	    return false;
+        if(!I.contains(dsNode.UID)){
+            dsNode.VN = M;
+        }
 	}
 
 	public void Do_Update(){
