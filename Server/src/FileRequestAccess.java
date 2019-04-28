@@ -51,16 +51,17 @@ public class FileRequestAccess {
 	*/
 
 		synchronized (Lock.getLockObject()){
-		    while (dsNode.isLock()){
                 try {
                     Lock.getLockObject().wait();
-                    dsNode.waitingRequest = false;
+					dsNode.waitingRequest = false;
+					dsNode.voteResponseMessages.clear();
                     dsNode.sendMessageToNeighbors(MessageType.VOTE_REQUEST);
-                    dsNode.waitforVoteResponses();
+					dsNode.waitforVoteResponses();
+					
                     if(!isDistinguished()){
                         dsNode.setLock(false);
                         dsNode.sendMessageToNeighbors(MessageType.ABORT);
-                        continue;
+                        return;
                     }
                     boolean hasCurrent = Catch_Up();
                     if(!hasCurrent){
@@ -71,7 +72,6 @@ public class FileRequestAccess {
                     e.printStackTrace();
                 }
             }
-        }
 	}
 
 	private int getRandomNumber(int number) {
@@ -138,7 +138,8 @@ public class FileRequestAccess {
 			P contains 2 or 3 in DS(I) ( IN this case count(I) == 1)
 			return true
 		*/
-		else
+
+		// else
 			return false;
 	}
 

@@ -1,5 +1,5 @@
 Server/bin/*
-.vscode
+Client/bin/*
 .idea
 .DS_Store
 *.iml

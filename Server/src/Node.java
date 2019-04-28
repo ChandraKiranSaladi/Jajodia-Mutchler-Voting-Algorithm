@@ -2,6 +2,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.io.IOException;
 import java.net.*;
@@ -26,6 +28,7 @@ public class Node {
 	public int maxVersionNumberinPartition;
 	HashSet<Integer> I = new HashSet<>();
 	private int voteResponseCount = 0;
+	public List<Message> voteResponseMessages;
 	
 	public Node(int UID, int port, String hostName, HashMap<Integer, NeighbourNode> uIDofNeighbors) {
 		this.waitingRequest = false;
@@ -38,6 +41,7 @@ public class Node {
 		this.RU = uIDofNeighbors.size();
 		this.DS = "";
 		this.lockManager = new LockManager();
+		this.voteResponseMessages = new LinkedList<>();
 	}
 
 	public Node() {
@@ -100,6 +104,7 @@ public class Node {
 		else if(msgType == MessageType.VOTE_RESPONSE) {
 			synchronized (Lock.getLockObject()) {
 				this.voteResponseCount++;
+				voteResponseMessages.add(msg);
 				Lock.getLockObject().notifyAll();
 			}
 		}
