@@ -133,4 +133,8 @@ public class TCPClient extends Thread{
 		}
 
 	}
+
+	public void close() throws IOException {
+		clientsocket.close();
+	}
 }

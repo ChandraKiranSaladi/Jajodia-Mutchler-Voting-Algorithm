@@ -1,7 +1,7 @@
 import java.io.*;
 import java.net.*;
 
-public class TCPServer {
+public class TCPServer extends Thread{
 	String HostName;
 	int PortNumber, UID;
 	ServerSocket serversocket;
@@ -17,6 +17,11 @@ public class TCPServer {
 		// hard coded local host for now
 		this(_dsNode.UID, _dsNode.port, _dsNode.getNodeHostName());
 		this.dsNode = _dsNode;
+	}
+
+	@Override
+	public void run(){
+		listenSocket();
 	}
 
 	public void listenSocket() {
@@ -45,4 +50,7 @@ public class TCPServer {
 		}
 	}
 
+	public void close() throws IOException {
+		serversocket.close();
+	}
 }

@@ -24,7 +24,8 @@ public class Node {
 	public HashSet<Integer> DS;
 	private int voteResponseCount = 0;
 	public HashMap<Integer,Message> voteResponseMessages;
-	
+	private TCPServer tcpServer;
+
 	public Node(int UID, int port, String hostName, HashMap<Integer, NeighbourNode> uIDofNeighbors) {
 		this.UID = UID;
 		this.port = port;
@@ -125,6 +126,17 @@ public class Node {
 
 		}else if(msgType == MessageType.ENABLE_CONNECTION){
 
+		}else if(msgType == MessageType.END){
+			try {
+				tcpServer.close();
+				tcpServer.interrupt();
+				for (TCPClient client: connectedClients.values()) {
+					client.close();
+					client.interrupt();
+				}
+			}catch (Exception e){
+//				e.printStackTrace();
+			}
 		}
 		else
 			msgQueue.add(msg);
@@ -187,5 +199,9 @@ public class Node {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public void setTCPServer(TCPServer tcpServer) {
+		this.tcpServer = tcpServer;
 	}
 }

@@ -10,15 +10,9 @@ public class InvokeMain {
 			System.out.println("Initializing Server with UID: " + dsNode.UID);
 
 			// Start server thread
-			Runnable serverRunnable = new Runnable() {
-				public void run() {
-					TCPServer server = new TCPServer(dsNode);
-					// start listening for client requests
-					server.listenSocket();
-				}
-			};
-			Thread serverthread = new Thread(serverRunnable);
-			serverthread.start();
+			TCPServer server = new TCPServer(dsNode);
+			dsNode.setTCPServer(server);
+			server.start();
 
 			System.out.println("Server started and listening to client requests.........");
 
