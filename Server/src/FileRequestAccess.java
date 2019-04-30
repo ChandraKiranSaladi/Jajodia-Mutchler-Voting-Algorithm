@@ -16,16 +16,16 @@ public class FileRequestAccess extends Thread{
 	private HashSet<Integer> I;
 	private HashSet<Integer> P;
 
-    public FileRequestAccess(Node _dsNode) {
+	public FileRequestAccess(Node _dsNode) {
 		this.messages = new LinkedBlockingQueue<>();
-    	this.dsNode = _dsNode;
+		this.dsNode = _dsNode;
 		this.M = 0;
-        HashSet<Integer> DS = new HashSet<>();
+		HashSet<Integer> DS = new HashSet<>();
 	}
 
 	@Override
 	public void run(){
-    	while (true){
+		while (true){
 			try {
 				System.out.println("waiting on queue");
 				Message message = messages.take();
@@ -60,46 +60,46 @@ public class FileRequestAccess extends Thread{
 		 * 
 		 */
 
-//		synchronized (Lock.getLockObject()) {
-		    dsNode.getLockManager().lockRequest();
-		    System.out.println("Received Lock");
-			dsNode.voteResponseMessages.clear();
-			System.out.println("Vote requests sent");
-			dsNode.sendMessageToNeighbors(MessageType.VOTE_REQUEST);
-			dsNode.waitforVoteResponses();
+		//		synchronized (Lock.getLockObject()) {
+		dsNode.getLockManager().lockRequest();
+		System.out.println("Received Lock");
+		dsNode.voteResponseMessages.clear();
+		System.out.println("Vote requests sent");
+		dsNode.sendMessageToNeighbors(MessageType.VOTE_REQUEST);
+		dsNode.waitforVoteResponses();
 
-			if (!isDistinguished()) {
-				System.out.println("Not Distinguished Partition");
-				dsNode.sendMessageToNeighbors(MessageType.ABORT);
-				dsNode.getLockManager().releaseRequest();
-				dsNode.sendMessage(0,new Message(dsNode.getNodeUID(),MessageType.COMPLETION));
-				System.out.println("Write unsuccessful");
-				return;
-			}
-			System.out.println("Catching Up()");
-			Catch_Up();
-			System.out.println("Do_Update()");
-			Do_Update();
-			System.out.println("Write successful");
+		if (!isDistinguished()) {
+			System.out.println("Not Distinguished Partition");
+			dsNode.sendMessageToNeighbors(MessageType.ABORT);
+			dsNode.getLockManager().releaseRequest();
 			dsNode.sendMessage(0,new Message(dsNode.getNodeUID(),MessageType.COMPLETION));
-//		}
+			System.out.println("Write unsuccessful");
+			return;
+		}
+		System.out.println("Catching Up()");
+		Catch_Up();
+		System.out.println("Do_Update()");
+		Do_Update();
+		System.out.println("Write successful");
+		dsNode.sendMessage(0,new Message(dsNode.getNodeUID(),MessageType.COMPLETION));
+		//		}
 	}
 
-//	private void Write() {
-//
-//		FileWriter fileWriter;
-//		try {
-//			fileWriter = new FileWriter(dsNode.filePath, true);
-//			fileWriter.write("Entering, timeStamp: " + dsNode.getMyTimeStamp() + " VN: " + dsNode.VN + " SC: "
-//					+ dsNode.SC + " DS: " + dsNode.DS);
-//			fileWriter.close();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//	}
+	//	private void Write() {
+	//
+	//		FileWriter fileWriter;
+	//		try {
+	//			fileWriter = new FileWriter(dsNode.filePath, true);
+	//			fileWriter.write("Entering, timeStamp: " + dsNode.getMyTimeStamp() + " VN: " + dsNode.VN + " SC: "
+	//					+ dsNode.SC + " DS: " + dsNode.DS);
+	//			fileWriter.close();
+	//		} catch (IOException e) {
+	//			e.printStackTrace();
+	//		}
+	//	}
 
 	public void addMessage(Message message) throws InterruptedException {
-    	messages.put(message);
+		messages.put(message);
 	}
 	private boolean isDistinguished() {
 		/*
@@ -111,6 +111,9 @@ public class FileRequestAccess extends Thread{
 		P = new HashSet<>(dsNode.uIDofNeighbors.keySet());
 		I = new HashSet<>();
 		P.add(dsNode.UID);
+		System.out.println("Partition Size = "+P.size());
+		if(P.size() == 1)
+			return false;
 		M = dsNode.VN;
 		for (Message msg : dsNode.voteResponseMessages.values()) {
 			if (M < msg.getVersionNumber()) {
@@ -125,20 +128,28 @@ public class FileRequestAccess extends Thread{
 				memberOfIMsg = msg;
 			}
 		}
-		
+		HashSet<Integer> DSIMsg = memberOfIMsg.getDS();
+		if(dsNode.VN == M) {
+			I.add(dsNode.getNodeUID());
+			DSIMsg.add(dsNode.getNodeUID());
+		}
+		System.out.println("I.size() = "+ I.size());
 		N = memberOfIMsg == null ? dsNode.UID : memberOfIMsg.getSC();
 		System.out.println("N = "+N + " M = "+M);
 		if (I.size() > N / 2)
 			return true;
-		else if (I.size() == N / 2)
-			if (I.containsAll(memberOfIMsg.getDS()))
+		else if (I.size() == N / 2) {
+			if (I.containsAll(DSIMsg)) {
+				System.out.println(" I am in the Distinguished Partition");
 				return true;
-			else if (N == 3) {
-				Set<Integer> PunionI = new HashSet<Integer>(memberOfIMsg.getDS());
-				PunionI.retainAll(I);
-				if (PunionI.size() >= 2)
-					return true;
 			}
+		}
+		else if (N == 3) {
+			Set<Integer> PunionI = new HashSet<Integer>(memberOfIMsg.getDS());
+			PunionI.retainAll(I);
+			if (PunionI.size() >= 2)
+				return true;
+		}
 		return false;
 	}
 
@@ -157,7 +168,7 @@ public class FileRequestAccess extends Thread{
 			return;
 		int SCi = sizeofP;
 		HashSet<Integer> DSi = new HashSet<>();
-		System.out.println("sizeofP = "+sizeofP);
+		//		System.out.println("sizeofP = "+sizeofP);
 		if (sizeofP == 3) {
 			for (Map.Entry<Integer, NeighbourNode> map : dsNode.uIDofNeighbors.entrySet()) {
 				DSi.add(map.getKey());
