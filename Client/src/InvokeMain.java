@@ -32,7 +32,7 @@ public class InvokeMain {
 			System.out.println("Server started and listening to client requests.........");
 
 			Thread.sleep(3000);
-			if(dsNode.getNodeUID() == 1) {
+			if(dsNode.getNodeUID() == 0) {
 				// Iterate through the node neighbors to send the Client Requests
 				dsNode.uIDofNeighbors.entrySet().forEach((neighbour) -> {
 					Runnable clientRunnable = new Runnable() {
@@ -70,9 +70,9 @@ public class InvokeMain {
 		Node dsNode = new Node();
 		try {
 			dsNode = ParseConfigFile.read(
-					"C:\\Users\\kiran\\OneDrive - The University of Texas at Dallas\\"
-							+ "CS 6378 ( Advanced Operating Systems )\\Projects\\"
-							+ "Tree Based Quorum\\Server\\src\\readFile.txt",
+					"C:\\Users\\ehaacls\\OneDrive - The University of Texas at Dallas\\"
+					+ "CS 6378 ( Advanced Operating Systems )\\Projects\\Jajodia-Mutchler-Voting-Algorithm\\"
+					+ "Client\\src\\readFile.txt",
 							InetAddress.getLocalHost().getHostName(), hostNumIndex);
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to get nodeList", e);

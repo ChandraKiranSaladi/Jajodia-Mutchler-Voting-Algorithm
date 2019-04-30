@@ -74,7 +74,7 @@ public class TCPClient extends Thread{
 				else if (msg instanceof Message) {
 					Message broadcastMessage = (Message) msg;
 					// Increment Lamport Clock &  add received messages to Blocking queue
-					System.out.println("Msg rx UID: " + broadcastMessage.getsenderUID()+" "+broadcastMessage.getMsgType()+" at:"+dsNode.getMyTimeStamp());
+					System.out.println("Msg rx UID: " + broadcastMessage.getsenderUID()+" "+broadcastMessage.getMsgType());
 					this.dsNode.messageHandler(broadcastMessage);
 				}
 
@@ -125,7 +125,7 @@ public class TCPClient extends Thread{
 				// add received messages to Blocking queue
 				this.dsNode.messageHandler(message);
 				
-				System.out.println("Msg rx UID: " + message.getsenderUID()+" "+message.getMsgType()+" at: "+new Date().getTime());
+				System.out.println("Msg rx UID: " + message.getsenderUID()+" "+message.getMsgType());
 			}
 		} catch (IOException | ClassNotFoundException e) {
 			System.out.println("failed transmission");

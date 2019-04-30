@@ -76,7 +76,7 @@ class ParseConfigFile {
 		for( int xyz = 0; xyz < partionNumbers; xyz++) {
 			String[] s = line[no++].trim().split("\\s+");
 			List<String> temp = new LinkedList<>();
-				for (int i = 1; i < s.length; i++) {
+				for (int i = 0; i < s.length; i++) {
 					// System.out.println(s[0] + s[i]);
 					temp.add(s[i]);
 				}
