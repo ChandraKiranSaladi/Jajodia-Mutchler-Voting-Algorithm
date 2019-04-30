@@ -1,5 +1,5 @@
 public enum MessageType {
-	Request,
-	Partition,
-	Completion
+	REQUEST,
+	PARTITION,
+	COMPLETION
 }

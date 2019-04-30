@@ -1,9 +1,10 @@
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 
-public class Message  implements Serializable, Comparable<Message>{
-	
+public class Message implements Serializable, Comparable<Message> {
+
 	private static final long serialVersionUID = 1L;
 	private int senderUID;
 	private MessageType msgType;
@@ -14,7 +15,7 @@ public class Message  implements Serializable, Comparable<Message>{
 		this.msgType = msgType;
 	}
 	
-	public Message(int senderUID, MessageType messageType, List<String> partitions ) {
+	public Message(int senderUID, MessageType messageType, List<String> partitions) {
 		this.senderUID = senderUID;
 		this.msgType = messageType;
 		this.partitions = partitions;
@@ -55,9 +56,6 @@ public class Message  implements Serializable, Comparable<Message>{
 	// TODO: Set the priority of messages to handle
 	@Override
 	public int compareTo(Message msg) {
-		if(msg.getMsgType() == MessageType.ABORT)
-			return -1;
-		else
 			return 1;
 	}
 }

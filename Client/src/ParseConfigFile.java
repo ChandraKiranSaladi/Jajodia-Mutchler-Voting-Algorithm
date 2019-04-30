@@ -83,7 +83,7 @@ class ParseConfigFile {
 				partitions.put(xyz, temp);
 			}
 		
-		node.partions = partitions;
+		node.partitions = partitions;
 		return node;
 	}
 }

@@ -1,5 +1,4 @@
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -7,6 +6,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.io.IOException;
 import java.net.*;
+import java.util.List;
 
 public class Node {
 	int UID, port;
@@ -14,12 +14,11 @@ public class Node {
 	String HostName;
 	HashMap<Integer, NeighbourNode> uIDofNeighbors;
 	ServerSocket serverSocket;
-	Map<Integer,TCPClient> connectedClients = (Map<Integer, TCPClient>) Collections.synchronizedMap(new HashMap<Integer,TCPClient>());
+	Map<Integer, TCPClient> connectedClients = (Map<Integer, TCPClient>) Collections
+			.synchronizedMap(new HashMap<Integer, TCPClient>());
 	BlockingQueue<Message> msgQueue;
-	int sentMessageCount;
-	int receivedMessageCount;
-	private boolean locked = false;
-	HashMap<Integer,List<String>> partitions;
+	HashMap<Integer, List<String>> partitions;
+	private boolean completion = false;
 
 	public Node(int UID, int port, String hostName, HashMap<Integer, NeighbourNode> uIDofNeighbors) {
 		this.UID = UID;
@@ -52,39 +51,51 @@ public class Node {
 	}
 
 	synchronized public void addMessageToQueue(Message msg) {
-		//			setMyTimeStamp(Math.max(msg.timeStamp,getMyTimeStamp()));
-		incrementReceivedMessages();
-		if(msg.getMsgType() == MessageType.Release) {
-			setLocked(false);
+		// setMyTimeStamp(Math.max(msg.timeStamp,getMyTimeStamp()));
+		if (msg.getMsgType() == MessageType.COMPLETION) {
+			this.completion = false;
 		}
-		else
-			msgQueue.add(msg);
+		msgQueue.add(msg);
 	}
 
-	public void sendGrant(int UID) {
+	public void sendRequest(int UID) {
+		setCompletion(false);
 		synchronized (connectedClients) {
 			TCPClient client = connectedClients.get(UID);
-					try {
-						System.out.println("Sending Grant to UID: "+ UID);
-						client.getOutputWriter().writeObject(new Message(new Date(), this.UID,MessageType.Grant));
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			incrementSentMessages();
+			try {
+				System.out.println("Sending Request to UID: " + UID);
+				client.getOutputWriter().writeObject(new Message(this.UID, MessageType.REQUEST));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
+	}
 
-	public void sendCompletion() {
+	public void sendPartitionMessageToServers(List<String> Components) {
+		MessageType msgType = MessageType.PARTITION;
 		synchronized (connectedClients) {
-			for(Entry<Integer, TCPClient> tmp: connectedClients.entrySet()){
-				TCPClient client = tmp.getValue();
+			for (Map.Entry<Integer, TCPClient> entry : connectedClients.entrySet()) {
+				int recipientUID = entry.getKey();
+				TCPClient client = entry.getValue();
 				try {
-					System.out.println("Sending Completion to UID: "+ client.getServerUID());
-					client.getOutputWriter().writeObject(new Message(new Date(), this.UID,MessageType.Completion));
+					System.out.println("Sending " + msgType + " to Server: " + recipientUID);
+					client.getOutputWriter().writeObject(new Message(this.UID, msgType, Components));
+					// System.out.println("Connection Closed for UID:"+getsenderUID);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				incrementSentMessages();
+			}
+		}
+	}
+
+	public void sendCompletion(int UID) {
+		synchronized (connectedClients) {
+			TCPClient client = connectedClients.get(UID);
+			try {
+				System.out.println("Sending Completion to UID: " + client.getServerUID());
+				client.getOutputWriter().writeObject(new Message(this.UID, MessageType.COMPLETION));
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -105,19 +116,6 @@ public class Node {
 		return this.HostName;
 	}
 
-	synchronized public void setLocked(boolean status){
-		this.locked = status;
-		if(status == true)
-			System.out.println("Locked");
-		else
-			System.out.println("Unlocked");
-		
-	}
-	
-	public boolean isLocked() {
-		return this.locked;
-	}
-	
 	public HashMap<Integer, NeighbourNode> getNeighbors() {
 		return this.uIDofNeighbors;
 	}
@@ -129,24 +127,24 @@ public class Node {
 	}
 
 	synchronized public void messageHandler(Message msg) {
-		incrementReceivedMessages();
 	}
 
-	public 	Map<Integer,TCPClient> getAllConnectedClients() {
+	synchronized public void setCompletion(boolean val) {
+		this.completion = val;
+	}
+
+	public Map<Integer, TCPClient> getAllConnectedClients() {
 		return this.connectedClients;
 	}
 
-	synchronized public void incrementSentMessages() {
-		this.sentMessageCount++;
+	public void waitForCompletion() {
+		while (!this.completion) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
-	
-	synchronized public void incrementReceivedMessages() {
-		this.receivedMessageCount++;
-	}
-	
-	public void printReport() {
-		System.out.println("Total Sent Messages: "+sentMessageCount);
-		System.out.println("Total Received Messages: "+receivedMessageCount);
-		
-	}
+
 }

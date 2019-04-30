@@ -1,6 +1,5 @@
 import java.io.*;
 import java.net.*;
-import java.util.Date;
 
 public class TCPClient extends Thread{
 
@@ -73,7 +72,7 @@ public class TCPClient extends Thread{
 				else if (msg instanceof Message) {
 					Message broadcastMessage = (Message) msg;
 					// add received messages to Blocking queue
-					System.out.println("Msg rx UID: " + broadcastMessage.getsenderUID()+" "+broadcastMessage.getMsgType()+" tmp"+broadcastMessage.getTimeStamp().getTime());
+					System.out.println("Msg rx UID: " + broadcastMessage.getsenderUID()+" "+broadcastMessage.getMsgType());
 					this.dsNode.addMessageToQueue(broadcastMessage);
 				}
 
@@ -125,7 +124,7 @@ public class TCPClient extends Thread{
 				// add received messages to Blocking queue
 				this.dsNode.messageHandler(message);
 				
-				System.out.println("Msg rx UID: " + message.getsenderUID()+" "+message.getMsgType()+" tmp: "+message.getTimeStamp().getTime()+" at: "+new Date().getTime());
+				System.out.println("Msg rx UID: " + message.getsenderUID()+" "+message.getMsgType());
 			}
 		} catch (IOException | ClassNotFoundException e) {
 			System.out.println("failed transmission");
