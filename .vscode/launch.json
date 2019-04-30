@@ -6,6 +6,12 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - InvokeMain",
+            "request": "launch",
+            "mainClass": "InvokeMain"
+        },
+        {
+            "type": "java",
             "name": "Debug (Launch) - Current File",
             "request": "launch",
             "mainClass": "${file}"
@@ -15,7 +21,8 @@
             "name": "Debug (Launch)-InvokeMain<Client>",
             "request": "launch",
             "mainClass": "InvokeMain",
-            "projectName": "Client"
+            "projectName": "Client",
+            "args": [0]
         },
         {
             "type": "java",
@@ -24,7 +31,6 @@
             "mainClass": "InvokeMain",
             "projectName": "Server",
             "args": [1]
-            
         }
     ]
 }

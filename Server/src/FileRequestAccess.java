@@ -29,7 +29,7 @@ public class FileRequestAccess extends Thread{
 			try {
 				System.out.println("waiting on queue");
 				Message message = messages.take();
-				System.out.println("Message present on queue");
+				System.out.println("Message with msgType "+message.getMsgType());
 				if(message.getMsgType()==MessageType.ABORT){
 					break;
 				}
@@ -60,37 +60,42 @@ public class FileRequestAccess extends Thread{
 		 * 
 		 */
 
-		synchronized (Lock.getLockObject()) {
+//		synchronized (Lock.getLockObject()) {
 		    dsNode.getLockManager().lockRequest();
+		    System.out.println("Received Lock");
 			dsNode.voteResponseMessages.clear();
 			dsNode.sendMessageToNeighbors(MessageType.VOTE_REQUEST);
 			dsNode.waitforVoteResponses();
 
 			if (!isDistinguished()) {
+				System.out.println("Not Distinguished Partition");
 				dsNode.sendMessageToNeighbors(MessageType.ABORT);
 				dsNode.getLockManager().releaseRequest();
 				dsNode.sendMessage(0,new Message(dsNode.getNodeUID(),MessageType.COMPLETION));
 				System.out.println("Write unsuccessful");
 				return;
 			}
+			System.out.println("Catching Up()");
 			Catch_Up();
+			System.out.println("Do_Update()");
 			Do_Update();
 			System.out.println("Write successful");
-		}
+			dsNode.sendMessage(0,new Message(dsNode.getNodeUID(),MessageType.COMPLETION));
+//		}
 	}
 
-	private void Write() {
-
-		FileWriter fileWriter;
-		try {
-			fileWriter = new FileWriter(dsNode.filePath, true);
-			fileWriter.write("Entering, timeStamp: " + dsNode.getMyTimeStamp() + " VN: " + dsNode.VN + " SC: "
-					+ dsNode.SC + " DS: " + dsNode.DS);
-			fileWriter.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+//	private void Write() {
+//
+//		FileWriter fileWriter;
+//		try {
+//			fileWriter = new FileWriter(dsNode.filePath, true);
+//			fileWriter.write("Entering, timeStamp: " + dsNode.getMyTimeStamp() + " VN: " + dsNode.VN + " SC: "
+//					+ dsNode.SC + " DS: " + dsNode.DS);
+//			fileWriter.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	public void addMessage(Message message) throws InterruptedException {
     	messages.put(message);
@@ -102,7 +107,7 @@ public class FileRequestAccess extends Thread{
 		 * be X if( I.contains(DS(X))) return true else if( N == 3) P contains 2 or 3 in
 		 * DS(I) ( IN this case count(I) == 1) return true else return false;
 		 */
-		Set<Integer> P = new HashSet<>(dsNode.uIDofNeighbors.keySet());
+		P = new HashSet<>(dsNode.uIDofNeighbors.keySet());
 		I = new HashSet<>();
 		P.add(dsNode.UID);
 		M = dsNode.VN;
@@ -119,7 +124,9 @@ public class FileRequestAccess extends Thread{
 				memberOfIMsg = msg;
 			}
 		}
+		
 		N = memberOfIMsg == null ? dsNode.UID : memberOfIMsg.getSC();
+		System.out.println("N = "+N + " M = "+M);
 		if (I.size() > N / 2)
 			return true;
 		else if (I.size() == N / 2)
@@ -139,6 +146,7 @@ public class FileRequestAccess extends Thread{
 		if (!I.contains(dsNode.UID)) {
 			dsNode.VN = M;
 		}
+		System.out.println("New VN of this Node: "+dsNode.VN);
 	}
 
 	private void Do_Update() {
@@ -148,19 +156,29 @@ public class FileRequestAccess extends Thread{
 			return;
 		int SCi = sizeofP;
 		HashSet<Integer> DSi = new HashSet<>();
+		System.out.println("sizeofP = "+sizeofP);
 		if (sizeofP == 3) {
 			for (Map.Entry<Integer, NeighbourNode> map : dsNode.uIDofNeighbors.entrySet()) {
 				DSi.add(map.getKey());
 			}
-		} else if (sizeofP % 2 == 0)
+		} else if (sizeofP % 2 == 0) {
 			DSi.add(Collections.min(dsNode.uIDofNeighbors.keySet()));
+		}
 		dsNode.DS = DSi;
+		dsNode.VN = VNi;
+		dsNode.SC = SCi;
+		System.out.println("VN= "+ VNi + " SC= "+ SCi);
+		System.out.println("Values inside DSi");
+		for(Integer x: DSi) {
+			System.out.print(x+" ");
+		}System.out.println();
 
 		/*
 		 * VN = M + 1 if( N ==3 && card(P) == 2) return; else VN = M + 1 SC = size(P) DS
 		 * = { least UID in P if( size(p) is even) set(P) if size(P) = 3 }
 		 */
-		dsNode.sendMessageToNeighbors(MessageType.COMMIT);
+		System.out.println("Ready to Commit");
+		dsNode.sendCommitMessageToComponent();
 		dsNode.getLockManager().releaseRequest();
 	}
 }

@@ -52,9 +52,6 @@ public class Node {
 
 	synchronized public void addMessageToQueue(Message msg) {
 		// setMyTimeStamp(Math.max(msg.timeStamp,getMyTimeStamp()));
-		if (msg.getMsgType() == MessageType.COMPLETION) {
-			this.completion = false;
-		}
 		msgQueue.add(msg);
 	}
 
@@ -127,18 +124,25 @@ public class Node {
 	}
 
 	synchronized public void messageHandler(Message msg) {
+		if (msg.getMsgType() == MessageType.COMPLETION) {
+			setCompletion(true);
+		}
 	}
 
 	synchronized public void setCompletion(boolean val) {
 		this.completion = val;
 	}
 
+	public boolean getCompletionStatus(){
+		return this.completion;
+	}
 	public Map<Integer, TCPClient> getAllConnectedClients() {
 		return this.connectedClients;
 	}
 
 	public void waitForCompletion() {
-		while (!this.completion) {
+		System.out.println("Waiting for Completion Message");
+		while (getCompletionStatus() == false) {
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {

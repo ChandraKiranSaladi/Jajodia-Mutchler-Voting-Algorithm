@@ -6,13 +6,15 @@ public class LockManager {
     }
 
     public synchronized void lockRequest() throws InterruptedException {
-        while (!locked){
+    	System.out.println("Locked in LockedManager");
+        while (locked){
             wait();
         }
         locked = true;
     }
 
     public synchronized void releaseRequest(){
+    	System.out.println("Releasing Locked in LockManager");
         locked = false;
         notifyAll();
     }

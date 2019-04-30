@@ -39,13 +39,16 @@ public class Node {
 	public void setuIDofNeighbors(HashMap<Integer, NeighbourNode> uIDofNeighbors) {
 		this.allServers = uIDofNeighbors;
 		this.uIDofNeighbors = new HashMap<>(uIDofNeighbors);
-		this.SC = uIDofNeighbors.size();
+		this.SC = uIDofNeighbors.size()+1;
+		System.out.println("this.SC = "+this.SC);
 	}
 
 	public void sendMessageToNeighbors(MessageType msgType) {
 		synchronized (connectedClients) {
 			for (Map.Entry<Integer, NeighbourNode> entry : uIDofNeighbors.entrySet()) {
 				int recipientUID = entry.getKey();
+				if(recipientUID == this.UID)
+					continue;
 				TCPClient client = connectedClients.get(entry.getKey());
 				try {
 						System.out.println("Sending "+msgType+" to: "+recipientUID);
@@ -57,7 +60,25 @@ public class Node {
 			}
 		}
 	}
-
+	
+	public void sendCommitMessageToComponent() {
+		synchronized (connectedClients) {
+			for (Map.Entry<Integer, NeighbourNode> entry : uIDofNeighbors.entrySet()) {
+				int recipientUID = entry.getKey();
+				if(recipientUID == this.UID)
+					continue;
+				TCPClient client = connectedClients.get(entry.getKey());
+				try {
+						System.out.println("Sending COMMIT to: "+recipientUID);
+					client.getOutputWriter().writeObject(new Message(this.UID, MessageType.COMMIT,this.VN,this.SC,this.DS ));
+					//						System.out.println("Connection Closed for UID:"+getsenderUID);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
 	public LockManager getLockManager(){
 		return this.lockManager;
 	}
@@ -91,6 +112,7 @@ public class Node {
 		}
 		else if(msgType == MessageType.VOTE_REQUEST){
 			try {
+				System.out.println("Message Handler. Vote_Request");
 				lockManager.lockRequest();
 				Message message = new Message(this.UID,MessageType.VOTE_RESPONSE,this.VN,this.SC,this.DS);
 				sendMessage(msg.getsenderUID(),message);
@@ -102,6 +124,7 @@ public class Node {
 			synchronized (Lock.getLockObject()) {
 				this.voteResponseCount++;
 				voteResponseMessages.put(msg.getsenderUID(),msg);
+//				System.out.println("voteResponseMessageCount = "+ voteResponseCount);
 				Lock.getLockObject().notifyAll();
 			}
 		}
@@ -110,10 +133,14 @@ public class Node {
 			this.VN = msg.getVersionNumber();
 			this.SC = msg.getSC();
 			System.out.println("VN = "+ this.VN + " SC = "+ this.SC);
+			for(Integer x: DS) {
+				System.out.println(x+" ");
+			}
 			lockManager.releaseRequest();
 		}else if(msgType == MessageType.REQUEST){
 			try {
-				System.out.println("added request to queue");
+//				lockManager.lockRequest();
+				System.out.println("MessageHandler. MessageType: "+msg.getMsgType());
 				fileRequestAccess.addMessage(msg);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -163,7 +190,7 @@ public class Node {
 	}
 
 	public void waitforVoteResponses() {
-		int numberOfGrants = this.uIDofNeighbors.size();
+		int numberOfGrants = this.uIDofNeighbors.size() - 1;
 		System.out.println("Waiting For Vote Responses");
 		synchronized (Lock.getLockObject()) {
 			while (numberOfGrants != this.voteResponseCount) {
@@ -175,6 +202,7 @@ public class Node {
 			}
 			this.voteResponseCount = 0;
 		}
+		System.out.println("Setting Vote Response Count to zero");
 
 	}
 
@@ -182,6 +210,7 @@ public class Node {
 		synchronized (connectedClients) {
 			TCPClient client = connectedClients.get(UID);
 			try {
+				System.out.println("Sending "+message.getMsgType()+" to UID: "+UID);
 				client.getOutputWriter().writeObject(message);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -195,15 +224,18 @@ public class Node {
 
 	private void partition(List<String> partitions){
 		synchronized (connectedClients) {
+			System.out.print("Node.Parition Method");
 			for (String partition : partitions) {
 				if (partition.contains("" + getNodeUID())) {
 					for (char server : partition.toCharArray()) {
 						int serverToAdd = server - '0';
+						System.out.println("Server to add: "+ serverToAdd);
 						uIDofNeighbors.put(serverToAdd,allServers.get(serverToAdd));
 					}
 				} else {
 					for (char server : partition.toCharArray()) {
 						int serverToRemove = server - '0';
+						System.out.println("Server to remove: "+ serverToRemove);
 						uIDofNeighbors.remove(serverToRemove);
 					}
 				}

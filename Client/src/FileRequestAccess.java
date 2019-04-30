@@ -21,7 +21,7 @@ public class FileRequestAccess {
                 e.printStackTrace();
             }
 
-            for (int j = 0; j < Components.size(); i++) {
+            for (int j = 0; j < Components.size(); j++) {
                 String component = Components.get(j);
                 for (int k = 0; k < 2; k++) {
                     Random rand = new Random();
