@@ -6,15 +6,15 @@ C:\Users\kiran\Downloads
 
 # UID    Hostname    Port
 # Servers, Server 0 is the main server where we partition the network
-   0     localhost   3223
-   1     localhost   3224
-   2     localhost   3225
-   3     localhost   3226
-   4     localhost   3227
-   5     localhost   3228   
-   6     localhost   3229
-   7     localhost   3230
-   8     localhost   3231
+   0     localhost   49165
+   1     localhost   49166
+   2     localhost   49167
+   3     localhost   49168
+   4     localhost   49169
+   5     localhost   49170
+   6     localhost   49171
+   7     localhost   49172
+   8     localhost   49173
    
  	
 # Server to Server Initial Connection

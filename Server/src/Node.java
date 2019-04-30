@@ -113,6 +113,7 @@ public class Node {
 			lockManager.releaseRequest();
 		}else if(msgType == MessageType.REQUEST){
 			try {
+				System.out.println("added request to queue");
 				fileRequestAccess.addMessage(msg);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -122,6 +123,7 @@ public class Node {
 		}else if(msgType == MessageType.COMPLETION){
 			synchronized (connectedClients) {
 				try {
+					fileRequestAccess.addMessage(new Message(-1,MessageType.ABORT));
 					tcpServer.close();
 					tcpServer.interrupt();
 					for (TCPClient client : connectedClients.values()) {
@@ -129,7 +131,7 @@ public class Node {
 						client.interrupt();
 					}
 				} catch (Exception e) {
-//				e.printStackTrace();
+	//				e.printStackTrace();
 				}
 			}
 		}

@@ -27,7 +27,9 @@ public class FileRequestAccess extends Thread{
 	public void run(){
     	while (true){
 			try {
+				System.out.println("waiting on queue");
 				Message message = messages.take();
+				System.out.println("Message present on queue");
 				if(message.getMsgType()==MessageType.ABORT){
 					break;
 				}
