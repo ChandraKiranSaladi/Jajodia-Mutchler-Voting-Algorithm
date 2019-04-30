@@ -230,6 +230,9 @@ public class Node {
 					for (char server : partition.toCharArray()) {
 						int serverToAdd = server - '0';
 						System.out.println("Server to add: "+ serverToAdd);
+						if(serverToAdd == getNodeUID()){
+							continue;
+						}
 						uIDofNeighbors.put(serverToAdd,allServers.get(serverToAdd));
 					}
 				} else {
