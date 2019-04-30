@@ -5,25 +5,19 @@ import java.util.HashSet;
 public class Message  implements Serializable, Comparable<Message>{
 	
 	private static final long serialVersionUID = 1L;
-	private Date timeStamp;
 	private int senderUID;
 	private MessageType msgType;
-	private int versionNumber = 0;
-	private int SC = 8;
-	private HashSet<Integer> DS;
+	private List<String> partitions;
 
 	public Message(int senderUID, MessageType msgType) {
 		this.senderUID = senderUID;
 		this.msgType = msgType;
 	}
 	
-	public Message(Date timeStamp, int senderUID, MessageType messageType, int VersionNumber, int SC, HashSet<Integer> DS ) {
-		this.timeStamp = timeStamp;
+	public Message(int senderUID, MessageType messageType, List<String> partitions ) {
 		this.senderUID = senderUID;
 		this.msgType = messageType;
-		this.versionNumber = VersionNumber;
-		this.SC = SC;
-		this.DS = DS; 
+		this.partitions = partitions;
 	}
 	
 	public Message(MessageType msgType) {
@@ -31,12 +25,12 @@ public class Message  implements Serializable, Comparable<Message>{
 	}
 	
 	public Message(Message message) {
-		this(message.timeStamp, message.senderUID, message.msgType, message.versionNumber,message.SC, message.DS);
+		this(message.senderUID, message.msgType);
 	}
 
-	public Date getTimeStamp() {
-		return this.timeStamp;
-	}
+	// public Date getTimeStamp() {
+	// 	return this.timeStamp;
+	// }
 	
 	public int getsenderUID() {
 		return this.senderUID;
@@ -46,17 +40,17 @@ public class Message  implements Serializable, Comparable<Message>{
 		return this.msgType;
 	}
 
-	public int getVersionNumber() {
-		return this.versionNumber;
-	}
+	// public int getVersionNumber() {
+	// 	return this.versionNumber;
+	// }
 
-	public int getSC(){
-		return this.SC;
-	}
+	// public int getSC(){
+	// 	return this.SC;
+	// }
 
-	public HashSet<Integer> getDS(){
-		return this.DS;
-	}
+	// public HashSet<Integer> getDS(){
+	// 	return this.DS;
+	// }
 
 	// TODO: Set the priority of messages to handle
 	@Override

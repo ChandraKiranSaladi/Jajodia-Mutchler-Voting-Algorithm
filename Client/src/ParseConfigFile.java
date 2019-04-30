@@ -23,6 +23,7 @@ class ParseConfigFile {
 		BufferedReader b = new BufferedReader(new FileReader(Path));
 		HashMap<Integer, NeighbourNode> map = new HashMap<>();
 		HashMap<Integer, NeighbourNode> UIDofNeighbors = new HashMap<Integer, NeighbourNode>();
+		HashMap<Integer, List<String>> partitions = new HashMap<>(); 
 		String readLine = "";
 
 		// Filtering the File 
@@ -68,9 +69,21 @@ class ParseConfigFile {
 				}
 			}
 		}
-		
 		node.uIDofNeighbors = UIDofNeighbors;
+
+		int partionNumbers = Integer.parseInt(line[no++]);
+
+		for( int xyz = 0; xyz < partionNumbers; xyz++) {
+			String[] s = line[no++].trim().split("\\s+");
+			List<String> temp = new LinkedList<>();
+				for (int i = 1; i < s.length; i++) {
+					// System.out.println(s[0] + s[i]);
+					temp.add(s[i]);
+				}
+				partitions.put(xyz, temp);
+			}
 		
+		node.partions = partitions;
 		return node;
 	}
 }

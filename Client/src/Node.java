@@ -19,6 +19,7 @@ public class Node {
 	int sentMessageCount;
 	int receivedMessageCount;
 	private boolean locked = false;
+	HashMap<Integer,List<String>> partitions;
 
 	public Node(int UID, int port, String hostName, HashMap<Integer, NeighbourNode> uIDofNeighbors) {
 		this.UID = UID;

@@ -5,7 +5,6 @@ import java.util.HashSet;
 public class Message  implements Serializable, Comparable<Message>{
 	
 	private static final long serialVersionUID = 1L;
-	private Date timeStamp;
 	private int senderUID;
 	private MessageType msgType;
 	private int versionNumber = 0;
@@ -17,8 +16,7 @@ public class Message  implements Serializable, Comparable<Message>{
 		this.msgType = msgType;
 	}
 	
-	public Message(Date timeStamp, int senderUID, MessageType messageType, int VersionNumber, int SC, HashSet<Integer> DS ) {
-		this.timeStamp = timeStamp;
+	public Message(int senderUID, MessageType messageType, int VersionNumber, int SC, HashSet<Integer> DS ) {
 		this.senderUID = senderUID;
 		this.msgType = messageType;
 		this.versionNumber = VersionNumber;
@@ -31,12 +29,12 @@ public class Message  implements Serializable, Comparable<Message>{
 	}
 	
 	public Message(Message message) {
-		this(message.timeStamp, message.senderUID, message.msgType, message.versionNumber,message.SC, message.DS);
+		this(message.senderUID, message.msgType, message.versionNumber,message.SC, message.DS);
 	}
 
-	public Date getTimeStamp() {
-		return this.timeStamp;
-	}
+	// public Date getTimeStamp() {
+	// 	return this.timeStamp;
+	// }
 	
 	public int getsenderUID() {
 		return this.senderUID;
