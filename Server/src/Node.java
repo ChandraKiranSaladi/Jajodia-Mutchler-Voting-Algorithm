@@ -129,15 +129,17 @@ public class Node {
 		}else if(msgType == MessageType.PARTITION){
 			partition(msg.getPartitions());
 		}else if(msgType == MessageType.COMPLETION){
-			try {
-				tcpServer.close();
-				tcpServer.interrupt();
-				for (TCPClient client: connectedClients.values()) {
-					client.close();
-					client.interrupt();
-				}
-			}catch (Exception e){
+			synchronized (connectedClients) {
+				try {
+					tcpServer.close();
+					tcpServer.interrupt();
+					for (TCPClient client : connectedClients.values()) {
+						client.close();
+						client.interrupt();
+					}
+				} catch (Exception e) {
 //				e.printStackTrace();
+				}
 			}
 		}
 		else
