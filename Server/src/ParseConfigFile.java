@@ -55,7 +55,7 @@ class ParseConfigFile {
 				map.put(UID, new NeighbourNode(Hostname, Port));
 				if (hostNumIndex == UID)
 					myUID = UID;
-				nodeList.put(UID,new Node(UID, Port, Hostname, null));
+				nodeList.put(UID,new Node(UID, Port, Hostname));
 			}
 
 			node = nodeList.get(hostNumIndex);
@@ -72,7 +72,7 @@ class ParseConfigFile {
 				}
 			}
 			
-			node.uIDofNeighbors = UIDofNeighbors;
+			node.setuIDofNeighbors(UIDofNeighbors);
 			File folder = new File(path+"\\JajodiaLogFolder");
 			if(folder.exists() && folder.isDirectory()) {
 				for(File f : folder.listFiles())

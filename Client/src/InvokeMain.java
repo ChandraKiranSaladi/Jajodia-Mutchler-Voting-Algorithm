@@ -70,9 +70,7 @@ public class InvokeMain {
 		Node dsNode = new Node();
 		try {
 			dsNode = ParseConfigFile.read(
-					"C:\\Users\\ehaacls\\OneDrive - The University of Texas at Dallas\\"
-					+ "CS 6378 ( Advanced Operating Systems )\\Projects\\Jajodia-Mutchler-Voting-Algorithm\\"
-					+ "Client\\src\\readFile.txt",
+					"src/readFile.txt",
 							InetAddress.getLocalHost().getHostName(), hostNumIndex);
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to get nodeList", e);

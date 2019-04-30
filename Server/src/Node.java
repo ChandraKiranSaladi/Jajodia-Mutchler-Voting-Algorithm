@@ -22,21 +22,24 @@ public class Node {
 	private TCPServer tcpServer;
 	private FileRequestAccess fileRequestAccess;
 
-	public Node(int UID, int port, String hostName, HashMap<Integer, NeighbourNode> uIDofNeighbors) {
+	public Node(int UID, int port, String hostName) {
 		this.UID = UID;
 		this.port = port;
 		this.HostName = hostName;
-		this.allServers = uIDofNeighbors;
-		this.uIDofNeighbors = uIDofNeighbors==null?new HashMap<>():new HashMap<>(uIDofNeighbors);
 		this.msgQueue = new PriorityBlockingQueue<Message>();
 		this.VN = 0;
-		this.SC = uIDofNeighbors.size();
 		this.DS = new HashSet<>();
 		this.lockManager = new LockManager();
 		this.voteResponseMessages = new HashMap<>();
 	}
 
 	public Node() {
+	}
+
+	public void setuIDofNeighbors(HashMap<Integer, NeighbourNode> uIDofNeighbors) {
+		this.allServers = uIDofNeighbors;
+		this.uIDofNeighbors = new HashMap<>(uIDofNeighbors);
+		this.SC = uIDofNeighbors.size();
 	}
 
 	public void sendMessageToNeighbors(MessageType msgType) {

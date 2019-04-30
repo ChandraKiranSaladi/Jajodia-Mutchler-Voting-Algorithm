@@ -52,8 +52,7 @@ public class InvokeMain {
 	public static Node BuildNode(int hostNumIndex) {
 		Node dsNode = new Node();
 		try {
-			String configFilePath = System.getenv("CONFIG_PATH");
-			dsNode = ParseConfigFile.read(configFilePath,
+			dsNode = ParseConfigFile.read("src/readFile.txt",
 							InetAddress.getLocalHost().getHostName(), hostNumIndex);
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to get nodeList", e);
