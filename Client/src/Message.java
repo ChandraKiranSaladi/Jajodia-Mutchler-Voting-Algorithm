@@ -1,31 +1,38 @@
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 
-public class Message  implements Serializable, Comparable<Message>{ 
+public class Message  implements Serializable, Comparable<Message>{
+	
 	private static final long serialVersionUID = 1L;
 	private Date timeStamp;
 	private int senderUID;
-	private MessageType msgtype;
-	
-	
-	public Message(int senderUID, MessageType Msgtype) {
+	private MessageType msgType;
+	private int versionNumber = 0;
+	private int SC = 8;
+	private HashSet<Integer> DS;
+
+	public Message(int senderUID, MessageType msgType) {
 		this.senderUID = senderUID;
-		this.msgtype = Msgtype;
+		this.msgType = msgType;
 	}
 	
-	public Message(Date timeStamp, int senderUID,MessageType messageType ) {
+	public Message(Date timeStamp, int senderUID, MessageType messageType, int VersionNumber, int SC, HashSet<Integer> DS ) {
 		this.timeStamp = timeStamp;
 		this.senderUID = senderUID;
-		this.msgtype = messageType;
+		this.msgType = messageType;
+		this.versionNumber = VersionNumber;
+		this.SC = SC;
+		this.DS = DS; 
 	}
 	
-	public Message(MessageType msgtype) {
-		this.msgtype = msgtype;
+	public Message(MessageType msgType) {
+		this.msgType = msgType;
 	}
 	
-//	public Message(Message message) {
-//		this(message.timeStamp, message.senderUID, message.msgtype);
-//	}
+	public Message(Message message) {
+		this(message.timeStamp, message.senderUID, message.msgType, message.versionNumber,message.SC, message.DS);
+	}
 
 	public Date getTimeStamp() {
 		return this.timeStamp;
@@ -36,11 +43,27 @@ public class Message  implements Serializable, Comparable<Message>{
 	}
 
 	public MessageType getMsgType() {
-		return this.msgtype;
+		return this.msgType;
 	}
 
+	public int getVersionNumber() {
+		return this.versionNumber;
+	}
+
+	public int getSC(){
+		return this.SC;
+	}
+
+	public HashSet<Integer> getDS(){
+		return this.DS;
+	}
+
+	// TODO: Set the priority of messages to handle
 	@Override
 	public int compareTo(Message msg) {
-		return 1;
+		if(msg.getMsgType() == MessageType.ABORT)
+			return -1;
+		else
+			return 1;
 	}
 }

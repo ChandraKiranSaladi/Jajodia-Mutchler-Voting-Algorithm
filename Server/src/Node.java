@@ -10,15 +10,14 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 
 public class Node {
-	public boolean waitingRequest;
 	int UID, port;
 	String filePath;
-	String HostName;
+	private String HostName;
 	HashMap<Integer, NeighbourNode> uIDofNeighbors;
-	BlockingQueue<Message> msgQueue;
-	ServerSocket serverSocket;
-	Map<Integer,TCPClient> connectedClients = (Map<Integer, TCPClient>) Collections.synchronizedMap(new HashMap<Integer,TCPClient>());
-	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	private BlockingQueue<Message> msgQueue;
+	private ServerSocket serverSocket;
+	private Map<Integer,TCPClient> connectedClients = (Map<Integer, TCPClient>) Collections.synchronizedMap(new HashMap<Integer,TCPClient>());
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	private LockManager lockManager;
 	private boolean lock = false;
 	public int VN, SC;
@@ -27,7 +26,6 @@ public class Node {
 	public HashMap<Integer,Message> voteResponseMessages;
 	
 	public Node(int UID, int port, String hostName, HashMap<Integer, NeighbourNode> uIDofNeighbors) {
-		this.waitingRequest = false;
 		this.UID = UID;
 		this.port = port;
 		this.HostName = hostName;
@@ -97,7 +95,16 @@ public class Node {
 	synchronized public void messageHandler(Message msg) {
 		MessageType msgType = msg.getMsgType();
 		if(msgType == MessageType.ABORT) {
-			setLock(false);
+			lockManager.releaseRequest();
+		}
+		else if(msgType == MessageType.VOTE_REQUEST){
+			try {
+				lockManager.lockRequest();
+				Message message = new Message(new Date(),this.UID,MessageType.VOTE_RESPONSE,this.VN,this.SC,this.DS);
+				sendMessage(msg.getsenderUID(),message);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 		else if(msgType == MessageType.VOTE_RESPONSE) {
 			synchronized (Lock.getLockObject()) {
@@ -112,6 +119,12 @@ public class Node {
 			this.SC = msg.getSC();
 			System.out.println("VN = "+ this.VN + " SC = "+ this.SC);
 			lockManager.releaseRequest();
+		}else if(msgType == MessageType.UPDATE_REQUEST){
+
+		}else if(msgType == MessageType.DISABLE_CONNECTION){
+
+		}else if(msgType == MessageType.ENABLE_CONNECTION){
+
 		}
 		else
 			msgQueue.add(msg);
@@ -164,7 +177,15 @@ public class Node {
 
 	}
 
-	public void waitForCommitMessage(){
-		// TODO: Waits for Commit message from the coordinator
+	public void sendMessage(int UID,Message message) {
+		synchronized (connectedClients) {
+			TCPClient client = connectedClients.get(UID);
+			try {
+				System.out.println("Sending Grant to UID: "+ UID);
+				client.getOutputWriter().writeObject(message);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

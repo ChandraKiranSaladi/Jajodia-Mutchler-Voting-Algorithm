@@ -3,14 +3,6 @@ import java.net.InetAddress;
 public class InvokeMain {
 	public static void main(String[] args) {
 		try {
-
-			// build a node for each terminal
-
-			// logic for assigning nodes - temporary
-			//			Scanner scanner = new Scanner(System.in);
-
-			//			int hostNumIndex = scanner.nextInt();
-			// Integer.parseInt(args[0]);
 			int hostNumIndex = Integer.parseInt(args[0]);;
 
 			Node dsNode = BuildNode(hostNumIndex);
