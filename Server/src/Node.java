@@ -25,6 +25,7 @@ public class Node {
 	private int voteResponseCount = 0;
 	public HashMap<Integer,Message> voteResponseMessages;
 	private TCPServer tcpServer;
+	private FileRequestAccess fileRequestAccess;
 
 	public Node(int UID, int port, String hostName, HashMap<Integer, NeighbourNode> uIDofNeighbors) {
 		this.UID = UID;
@@ -37,6 +38,7 @@ public class Node {
 		this.DS = new HashSet<>();
 		this.lockManager = new LockManager();
 		this.voteResponseMessages = new HashMap<>();
+		this.fileRequestAccess = new FileRequestAccess(this);
 	}
 
 	public Node() {
@@ -121,7 +123,11 @@ public class Node {
 			System.out.println("VN = "+ this.VN + " SC = "+ this.SC);
 			lockManager.releaseRequest();
 		}else if(msgType == MessageType.UPDATE_REQUEST){
-
+			try {
+				fileRequestAccess.InitiateAlgorithm();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}else if(msgType == MessageType.DISABLE_CONNECTION){
 
 		}else if(msgType == MessageType.ENABLE_CONNECTION){

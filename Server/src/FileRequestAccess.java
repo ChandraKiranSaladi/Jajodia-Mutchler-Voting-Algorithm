@@ -57,7 +57,7 @@ public class FileRequestAccess {
 		}
 	}
 
-	public void Write() {
+	private void Write() {
 
 		FileWriter fileWriter;
 		try {
@@ -70,7 +70,7 @@ public class FileRequestAccess {
 		}
 	}
 
-	public boolean isDistinguished() {
+	private boolean isDistinguished() {
 		/*
 		 * P = neighbors + me M = max ( VN ) I = set of max VN N = SC(any site in I) if(
 		 * count(I) > N/2) return true else if( count(I) == N/2) let any one site in I
@@ -109,14 +109,14 @@ public class FileRequestAccess {
 		return false;
 	}
 
-	public void Catch_Up() {
+	private void Catch_Up() {
 		// TODO: Update the outdated copy in your Server with a more recent one
 		if (!I.contains(dsNode.UID)) {
 			dsNode.VN = M;
 		}
 	}
 
-	public void Do_Update() {
+	private void Do_Update() {
 		int sizeofP = P.size();
 		int VNi = this.M + 1;
 		if (N == 3 && sizeofP == 2)
