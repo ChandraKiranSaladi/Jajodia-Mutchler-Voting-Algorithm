@@ -37,11 +37,12 @@ public class InvokeMain {
 				Thread clientthread = new Thread(clientRunnable);
 				clientthread.start();
 			});
-
+			FileRequestAccess fileRequestAccess = new FileRequestAccess(dsNode);
+			dsNode.setFileRequestAccess(fileRequestAccess);
+			fileRequestAccess.start();
 			// Sleep so that all the Client connections are established		
 			Thread.sleep(3000);
-//			new FileRequestAccess(dsNode).InitiateAlgorithm();
-			
+
 		}catch(Exception e){
 			e.printStackTrace();
 		}

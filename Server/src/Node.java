@@ -27,14 +27,13 @@ public class Node {
 		this.port = port;
 		this.HostName = hostName;
 		this.allServers = uIDofNeighbors;
-		this.uIDofNeighbors = new HashMap<>(uIDofNeighbors);
+		this.uIDofNeighbors = uIDofNeighbors==null?new HashMap<>():new HashMap<>(uIDofNeighbors);
 		this.msgQueue = new PriorityBlockingQueue<Message>();
 		this.VN = 0;
 		this.SC = uIDofNeighbors.size();
 		this.DS = new HashSet<>();
 		this.lockManager = new LockManager();
 		this.voteResponseMessages = new HashMap<>();
-		this.fileRequestAccess = new FileRequestAccess(this);
 	}
 
 	public Node() {
@@ -111,7 +110,7 @@ public class Node {
 			lockManager.releaseRequest();
 		}else if(msgType == MessageType.REQUEST){
 			try {
-				fileRequestAccess.InitiateAlgorithm();
+				fileRequestAccess.addMessage(msg);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -178,7 +177,6 @@ public class Node {
 		synchronized (connectedClients) {
 			TCPClient client = connectedClients.get(UID);
 			try {
-				System.out.println("Sending Grant to UID: "+ UID);
 				client.getOutputWriter().writeObject(message);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -206,5 +204,9 @@ public class Node {
 				}
 			}
 		}
+	}
+
+	public void setFileRequestAccess(FileRequestAccess fileRequestAccess) {
+		this.fileRequestAccess = fileRequestAccess;
 	}
 }

@@ -5,9 +5,11 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-public class FileRequestAccess {
-
+public class FileRequestAccess extends Thread{
+	private BlockingQueue<Message> messages;
 	Node dsNode;
 	private int M;
 	private int N;
@@ -15,9 +17,25 @@ public class FileRequestAccess {
 	private HashSet<Integer> P;
 
     public FileRequestAccess(Node _dsNode) {
-		this.dsNode = _dsNode;
+		this.messages = new LinkedBlockingQueue<>();
+    	this.dsNode = _dsNode;
 		this.M = 0;
         HashSet<Integer> DS = new HashSet<>();
+	}
+
+	@Override
+	public void run(){
+    	while (true){
+			try {
+				Message message = messages.take();
+				if(message.getMsgType()==MessageType.ABORT){
+					break;
+				}
+				InitiateAlgorithm();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public void InitiateAlgorithm() throws InterruptedException {
@@ -49,10 +67,13 @@ public class FileRequestAccess {
 			if (!isDistinguished()) {
 				dsNode.sendMessageToNeighbors(MessageType.ABORT);
 				dsNode.getLockManager().releaseRequest();
+				dsNode.sendMessage(0,new Message(dsNode.getNodeUID(),MessageType.COMPLETION));
+				System.out.println("Write unsuccessful");
 				return;
 			}
 			Catch_Up();
 			Do_Update();
+			System.out.println("Write successful");
 		}
 	}
 
@@ -69,6 +90,9 @@ public class FileRequestAccess {
 		}
 	}
 
+	public void addMessage(Message message) throws InterruptedException {
+    	messages.put(message);
+	}
 	private boolean isDistinguished() {
 		/*
 		 * P = neighbors + me M = max ( VN ) I = set of max VN N = SC(any site in I) if(
