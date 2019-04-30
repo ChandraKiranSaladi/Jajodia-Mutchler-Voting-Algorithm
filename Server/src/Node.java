@@ -1,8 +1,4 @@
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.io.IOException;
 import java.net.*;
 import java.text.SimpleDateFormat;
@@ -13,6 +9,7 @@ public class Node {
 	int UID, port;
 	String filePath;
 	private String HostName;
+	HashMap<Integer, NeighbourNode> allServers;
 	HashMap<Integer, NeighbourNode> uIDofNeighbors;
 	private BlockingQueue<Message> msgQueue;
 	private ServerSocket serverSocket;
@@ -31,7 +28,8 @@ public class Node {
 		this.UID = UID;
 		this.port = port;
 		this.HostName = hostName;
-		this.uIDofNeighbors = uIDofNeighbors;
+		this.allServers = uIDofNeighbors;
+		this.uIDofNeighbors = new HashMap<>(uIDofNeighbors);
 		this.msgQueue = new PriorityBlockingQueue<Message>();
 		this.VN = 0;
 		this.SC = uIDofNeighbors.size();
@@ -46,9 +44,9 @@ public class Node {
 
 	public void sendMessageToNeighbors(MessageType msgType) {
 		synchronized (connectedClients) {
-			for (Map.Entry<Integer, TCPClient> entry : connectedClients.entrySet()) {
+			for (Map.Entry<Integer, NeighbourNode> entry : uIDofNeighbors.entrySet()) {
 				int recipientUID = entry.getKey();
-				TCPClient client = entry.getValue();
+				TCPClient client = connectedClients.get(entry.getKey());
 				try {
 						System.out.println("Sending "+msgType+" to: "+recipientUID);
 					client.getOutputWriter().writeObject(new Message(this.UID, msgType ));
@@ -103,7 +101,7 @@ public class Node {
 		else if(msgType == MessageType.VOTE_REQUEST){
 			try {
 				lockManager.lockRequest();
-				Message message = new Message(new Date(),this.UID,MessageType.VOTE_RESPONSE,this.VN,this.SC,this.DS);
+				Message message = new Message(this.UID,MessageType.VOTE_RESPONSE,this.VN,this.SC,this.DS);
 				sendMessage(msg.getsenderUID(),message);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -122,17 +120,15 @@ public class Node {
 			this.SC = msg.getSC();
 			System.out.println("VN = "+ this.VN + " SC = "+ this.SC);
 			lockManager.releaseRequest();
-		}else if(msgType == MessageType.UPDATE_REQUEST){
+		}else if(msgType == MessageType.REQUEST){
 			try {
 				fileRequestAccess.InitiateAlgorithm();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		}else if(msgType == MessageType.DISABLE_CONNECTION){
-
-		}else if(msgType == MessageType.ENABLE_CONNECTION){
-
-		}else if(msgType == MessageType.END){
+		}else if(msgType == MessageType.PARTITION){
+			partition(msg.getPartitions());
+		}else if(msgType == MessageType.COMPLETION){
 			try {
 				tcpServer.close();
 				tcpServer.interrupt();
@@ -209,5 +205,23 @@ public class Node {
 
 	public void setTCPServer(TCPServer tcpServer) {
 		this.tcpServer = tcpServer;
+	}
+
+	private void partition(List<String> partitions){
+		synchronized (connectedClients) {
+			for (String partition : partitions) {
+				if (partition.contains("" + getNodeUID())) {
+					for (char server : partition.toCharArray()) {
+						int serverToAdd = server - '0';
+						uIDofNeighbors.put(serverToAdd,allServers.get(serverToAdd));
+					}
+				} else {
+					for (char server : partition.toCharArray()) {
+						int serverToRemove = server - '0';
+						uIDofNeighbors.remove(serverToRemove);
+					}
+				}
+			}
+		}
 	}
 }

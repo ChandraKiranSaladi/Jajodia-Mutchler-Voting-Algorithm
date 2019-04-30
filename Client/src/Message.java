@@ -1,6 +1,7 @@
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 
 public class Message  implements Serializable, Comparable<Message>{
 	
@@ -55,9 +56,6 @@ public class Message  implements Serializable, Comparable<Message>{
 	// TODO: Set the priority of messages to handle
 	@Override
 	public int compareTo(Message msg) {
-		if(msg.getMsgType() == MessageType.ABORT)
-			return -1;
-		else
-			return 1;
+		return this.msgType.compareTo(msg.msgType);
 	}
 }

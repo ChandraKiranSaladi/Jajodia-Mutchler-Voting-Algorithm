@@ -1,6 +1,7 @@
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 
 public class Message  implements Serializable, Comparable<Message>{
 	
@@ -10,6 +11,7 @@ public class Message  implements Serializable, Comparable<Message>{
 	private int versionNumber = 0;
 	private int SC = 8;
 	private HashSet<Integer> DS;
+	private List<String> partitions;
 
 	public Message(int senderUID, MessageType msgType) {
 		this.senderUID = senderUID;
@@ -23,7 +25,13 @@ public class Message  implements Serializable, Comparable<Message>{
 		this.SC = SC;
 		this.DS = DS; 
 	}
-	
+
+	public Message(int senderUID, MessageType messageType, List<String> partitions ) {
+		this.senderUID = senderUID;
+		this.msgType = messageType;
+		this.partitions = partitions;
+	}
+
 	public Message(MessageType msgType) {
 		this.msgType = msgType;
 	}
@@ -35,7 +43,15 @@ public class Message  implements Serializable, Comparable<Message>{
 	// public Date getTimeStamp() {
 	// 	return this.timeStamp;
 	// }
-	
+
+	public List<String> getPartitions() {
+		return partitions;
+	}
+
+	public void setPartitions(List<String> partitions) {
+		this.partitions = partitions;
+	}
+
 	public int getsenderUID() {
 		return this.senderUID;
 	}
