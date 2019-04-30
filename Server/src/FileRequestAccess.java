@@ -63,6 +63,7 @@ public class FileRequestAccess extends Thread{
 		synchronized (Lock.getLockObject()) {
 		    dsNode.getLockManager().lockRequest();
 			dsNode.voteResponseMessages.clear();
+			System.out.println("Vote requests sent");
 			dsNode.sendMessageToNeighbors(MessageType.VOTE_REQUEST);
 			dsNode.waitforVoteResponses();
 

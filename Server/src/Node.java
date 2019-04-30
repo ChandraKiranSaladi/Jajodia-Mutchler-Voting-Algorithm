@@ -199,6 +199,9 @@ public class Node {
 				if (partition.contains("" + getNodeUID())) {
 					for (char server : partition.toCharArray()) {
 						int serverToAdd = server - '0';
+						if(serverToAdd == getNodeUID()){
+							continue;
+						}
 						uIDofNeighbors.put(serverToAdd,allServers.get(serverToAdd));
 					}
 				} else {
