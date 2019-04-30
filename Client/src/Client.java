@@ -56,7 +56,7 @@ public class InvokeMain {
 			// Sleep so that all the Client connections are established		
 			Thread.sleep(3000);
 
-			new FileRequestHandler(dsNode).listen();
+//			new FileRequestHandler(dsNode).listen();
 			
 		}catch(Exception e){
 			e.printStackTrace();
