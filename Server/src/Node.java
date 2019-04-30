@@ -9,14 +9,12 @@ public class Node {
 	int UID, port;
 	String filePath;
 	private String HostName;
-	HashMap<Integer, NeighbourNode> allServers;
+	private HashMap<Integer, NeighbourNode> allServers;
 	HashMap<Integer, NeighbourNode> uIDofNeighbors;
 	private BlockingQueue<Message> msgQueue;
-	private ServerSocket serverSocket;
 	private Map<Integer,TCPClient> connectedClients = (Map<Integer, TCPClient>) Collections.synchronizedMap(new HashMap<Integer,TCPClient>());
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	private LockManager lockManager;
-	private boolean lock = false;
 	public int VN, SC;
 	public HashSet<Integer> DS;
 	private int voteResponseCount = 0;
@@ -62,10 +60,6 @@ public class Node {
 		return this.lockManager;
 	}
 
-	public void attachServerSocket(ServerSocket serverSocket) {
-		this.serverSocket = serverSocket;
-	}
-
 	public int getNodeUID() {
 		return this.UID;
 	}
@@ -86,11 +80,6 @@ public class Node {
 		synchronized (connectedClients) {
 			connectedClients.put(UID, client);
 		}
-	}
-
-
-	public 	Map<Integer,TCPClient> getAllConnectedClients() {
-		return this.connectedClients;
 	}
 
 	synchronized public void messageHandler(Message msg) {
@@ -163,14 +152,6 @@ public class Node {
 			e.printStackTrace();
 		}
 		return msg;
-	}
-
-	synchronized public boolean isLock() {
-		return this.lock;
-	}
-
-	synchronized public void setLock(boolean val){
-		this.lock = val;
 	}
 
 	public String getMyTimeStamp() {

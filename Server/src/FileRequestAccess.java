@@ -47,7 +47,6 @@ public class FileRequestAccess {
 			dsNode.waitforVoteResponses();
 
 			if (!isDistinguished()) {
-				dsNode.setLock(false);
 				dsNode.sendMessageToNeighbors(MessageType.ABORT);
 				dsNode.getLockManager().releaseRequest();
 				return;
