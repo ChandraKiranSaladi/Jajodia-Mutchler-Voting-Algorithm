@@ -31,7 +31,7 @@ public class InvokeMain {
 
 			System.out.println("Server started and listening to client requests.........");
 
-			Thread.sleep(3000);
+			Thread.sleep(8000);
 			if(dsNode.getNodeUID() == 0) {
 				// Iterate through the node neighbors to send the Client Requests
 				dsNode.uIDofNeighbors.entrySet().forEach((neighbour) -> {
@@ -55,7 +55,7 @@ public class InvokeMain {
 			}
 
 			// Sleep so that all the Client connections are established		
-			Thread.sleep(3000);
+			Thread.sleep(8000);
 
 			new FileRequestAccess(dsNode).InitiateAlgorithm();
 			
@@ -70,7 +70,7 @@ public class InvokeMain {
 		Node dsNode = new Node();
 		try {
 			dsNode = ParseConfigFile.read(
-					"src/readFile2.txt",
+					"src/readFile.txt",
 							InetAddress.getLocalHost().getHostName(), hostNumIndex);
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to get nodeList", e);

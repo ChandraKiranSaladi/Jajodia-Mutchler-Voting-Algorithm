@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class FileRequestAccess extends Thread{
+public class FileRequestAccess extends Thread {
 	private BlockingQueue<Message> messages;
 	Node dsNode;
 	private int M;
@@ -24,13 +24,13 @@ public class FileRequestAccess extends Thread{
 	}
 
 	@Override
-	public void run(){
-		while (true){
+	public void run() {
+		while (true) {
 			try {
 				System.out.println("waiting on queue");
 				Message message = messages.take();
-				System.out.println("Message with msgType "+message.getMsgType());
-				if(message.getMsgType()==MessageType.ABORT){
+				System.out.println("Message with msgType " + message.getMsgType());
+				if (message.getMsgType() == MessageType.ABORT) {
 					break;
 				}
 				InitiateAlgorithm();
@@ -60,7 +60,7 @@ public class FileRequestAccess extends Thread{
 		 * 
 		 */
 
-		//		synchronized (Lock.getLockObject()) {
+		// synchronized (Lock.getLockObject()) {
 		dsNode.getLockManager().lockRequest();
 		System.out.println("Received Lock");
 		dsNode.voteResponseMessages.clear();
@@ -72,8 +72,14 @@ public class FileRequestAccess extends Thread{
 			System.out.println("Not Distinguished Partition");
 			dsNode.sendMessageToNeighbors(MessageType.ABORT);
 			dsNode.getLockManager().releaseRequest();
-			dsNode.sendMessage(0,new Message(dsNode.getNodeUID(),MessageType.COMPLETION));
+			dsNode.sendMessage(0, new Message(dsNode.getNodeUID(), MessageType.COMPLETION));
 			System.out.println("Write unsuccessful");
+			System.out.println("VN= " + dsNode.VN + " SC= " + dsNode.SC);
+			System.out.println("Values inside DSi");
+			for (Integer x : dsNode.DS) {
+				System.out.print(x + " ");
+			}
+			System.out.println();
 			return;
 		}
 		System.out.println("Catching Up()");
@@ -81,26 +87,28 @@ public class FileRequestAccess extends Thread{
 		System.out.println("Do_Update()");
 		Do_Update();
 		System.out.println("Write successful");
-		dsNode.sendMessage(0,new Message(dsNode.getNodeUID(),MessageType.COMPLETION));
-		//		}
+		dsNode.sendMessage(0, new Message(dsNode.getNodeUID(), MessageType.COMPLETION));
+		// }
 	}
 
-	//	private void Write() {
+	// private void Write() {
 	//
-	//		FileWriter fileWriter;
-	//		try {
-	//			fileWriter = new FileWriter(dsNode.filePath, true);
-	//			fileWriter.write("Entering, timeStamp: " + dsNode.getMyTimeStamp() + " VN: " + dsNode.VN + " SC: "
-	//					+ dsNode.SC + " DS: " + dsNode.DS);
-	//			fileWriter.close();
-	//		} catch (IOException e) {
-	//			e.printStackTrace();
-	//		}
-	//	}
+	// FileWriter fileWriter;
+	// try {
+	// fileWriter = new FileWriter(dsNode.filePath, true);
+	// fileWriter.write("Entering, timeStamp: " + dsNode.getMyTimeStamp() + " VN: "
+	// + dsNode.VN + " SC: "
+	// + dsNode.SC + " DS: " + dsNode.DS);
+	// fileWriter.close();
+	// } catch (IOException e) {
+	// e.printStackTrace();
+	// }
+	// }
 
 	public void addMessage(Message message) throws InterruptedException {
 		messages.put(message);
 	}
+
 	private boolean isDistinguished() {
 		/*
 		 * P = neighbors + me M = max ( VN ) I = set of max VN N = SC(any site in I) if(
@@ -111,8 +119,8 @@ public class FileRequestAccess extends Thread{
 		P = new HashSet<>(dsNode.uIDofNeighbors.keySet());
 		I = new HashSet<>();
 		P.add(dsNode.UID);
-		System.out.println("Partition Size = "+P.size());
-		if(P.size() == 1)
+		System.out.println("Partition Size = " + P.size());
+		if (P.size() == 1)
 			return false;
 		M = dsNode.VN;
 		for (Message msg : dsNode.voteResponseMessages.values()) {
@@ -129,13 +137,13 @@ public class FileRequestAccess extends Thread{
 			}
 		}
 		HashSet<Integer> DSIMsg = memberOfIMsg.getDS();
-		if(dsNode.VN == M) {
+		if (dsNode.VN == M) {
 			I.add(dsNode.getNodeUID());
 			DSIMsg.add(dsNode.getNodeUID());
 		}
-		System.out.println("I.size() = "+ I.size());
+		System.out.println("I.size() = " + I.size());
 		N = memberOfIMsg == null ? dsNode.UID : memberOfIMsg.getSC();
-		System.out.println("N = "+N + " M = "+M);
+		System.out.println("N = " + N + " M = " + M);
 		if (I.size() > N / 2)
 			return true;
 		else if (I.size() == N / 2) {
@@ -143,8 +151,7 @@ public class FileRequestAccess extends Thread{
 				System.out.println(" I am in the Distinguished Partition");
 				return true;
 			}
-		}
-		else if (N == 3) {
+		} else if (N == 3) {
 			Set<Integer> PunionI = new HashSet<Integer>(memberOfIMsg.getDS());
 			PunionI.retainAll(I);
 			if (PunionI.size() >= 2)
@@ -158,7 +165,7 @@ public class FileRequestAccess extends Thread{
 		if (!I.contains(dsNode.UID)) {
 			dsNode.VN = M;
 		}
-		System.out.println("New VN of this Node: "+dsNode.VN);
+		System.out.println("New VN of this Node: " + dsNode.VN);
 	}
 
 	private void Do_Update() {
@@ -168,7 +175,7 @@ public class FileRequestAccess extends Thread{
 			return;
 		int SCi = sizeofP;
 		HashSet<Integer> DSi = new HashSet<>();
-		//		System.out.println("sizeofP = "+sizeofP);
+		// System.out.println("sizeofP = "+sizeofP);
 		if (sizeofP == 3) {
 			for (Map.Entry<Integer, NeighbourNode> map : dsNode.uIDofNeighbors.entrySet()) {
 				DSi.add(map.getKey());
@@ -179,11 +186,12 @@ public class FileRequestAccess extends Thread{
 		dsNode.DS = DSi;
 		dsNode.VN = VNi;
 		dsNode.SC = SCi;
-		System.out.println("VN= "+ VNi + " SC= "+ SCi);
+		System.out.println("VN= " + VNi + " SC= " + SCi);
 		System.out.println("Values inside DSi");
-		for(Integer x: DSi) {
-			System.out.print(x+" ");
-		}System.out.println();
+		for (Integer x : DSi) {
+			System.out.print(x + " ");
+		}
+		System.out.println();
 
 		/*
 		 * VN = M + 1 if( N ==3 && card(P) == 2) return; else VN = M + 1 SC = size(P) DS

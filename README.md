@@ -1,7 +1,8 @@
 ## Jajodia Mutchler Voting Algorithm
 
 Implementation of Jajodia Mutchler Voting Algorithm. 
-<strong>Paper Reference: A Hybrid Replica Control Algorithm Combining Static and Dynamic Voting<strong>
+<strong>Paper Reference: A Hybrid Replica Control Algorithm Combining Static and Dynamic Voting</strong>
+https://ieeexplore.ieee.org/document/43421
 ***
 ### Technical Specs
     * Java-8
@@ -22,13 +23,16 @@ only one data object X, replicated across the eight servers, that is subject to 
 replicas update (RU) and distinguished site (DS) values for X at all servers are 1, 8, and A, respectively. The rule for
 selection of distinguished site favors the server that is alphabetically smallest among the candidates.
 
-####  Requirements
+**For Further Details read Project3.pdf**
+
+####  Requirements for the Project
 1. You must attemp at least two writes in each of the network components show in Figure 1. A write can originate
 at any of the servers in the corresponding partition.
 2. After each write attempt, successful or unsuccessful, output the VN, RU, and DS values for each server
 ---
 ## Important Note
 
+Current Implementation does not handle multiple requests at once. For Crash Failures read the Research paper to implement Make_Current Method.
 ***
 
 ### **Execution** 
