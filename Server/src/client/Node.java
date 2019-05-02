@@ -1,5 +1,8 @@
 package client;
 
+import common.Message;
+import common.MessageType;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -142,7 +145,7 @@ public class Node {
 	}
 
 	public void waitForCompletion() {
-		System.out.println("Waiting for Completion client.Message");
+		System.out.println("Waiting for Completion common.Message");
 		while (getCompletionStatus() == false) {
 			try {
 				Thread.sleep(10);

@@ -1,5 +1,8 @@
 package server;
 
+import common.Message;
+import common.MessageType;
+
 import java.util.*;
 import java.io.IOException;
 import java.text.SimpleDateFormat;

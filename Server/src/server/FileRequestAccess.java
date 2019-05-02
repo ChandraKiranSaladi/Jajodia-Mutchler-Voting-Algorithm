@@ -1,5 +1,8 @@
 package server;
 
+import common.Message;
+import common.MessageType;
+
 import java.util.HashSet;
 import java.util.Collections;
 import java.util.Map;

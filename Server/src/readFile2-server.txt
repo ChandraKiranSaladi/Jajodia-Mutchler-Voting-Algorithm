@@ -1,0 +1,20 @@
+#Path
+C:\Users\kiran\Downloads
+
+# Nodes
+3
+
+# UID    Hostname    Port
+# Servers, Server 0 is the main server where we partition the network
+   0     localhost   49152
+   1     localhost   49153
+   2     localhost   49154
+   
+ 	
+# Server to Server Initial Connection
+2
+# Node neighbors
+	1	2
+	2
+
+	

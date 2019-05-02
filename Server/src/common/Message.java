@@ -1,11 +1,11 @@
-package server;
+package common;
 
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 
 public class Message  implements Serializable, Comparable<Message>{
-	
+
 	private static final long serialVersionUID = 1L;
 	private int senderUID;
 	private MessageType msgType;
@@ -18,13 +18,13 @@ public class Message  implements Serializable, Comparable<Message>{
 		this.senderUID = senderUID;
 		this.msgType = msgType;
 	}
-	
+
 	public Message(int senderUID, MessageType messageType, int VersionNumber, int SC, HashSet<Integer> DS ) {
 		this.senderUID = senderUID;
 		this.msgType = messageType;
 		this.versionNumber = VersionNumber;
 		this.SC = SC;
-		this.DS = DS; 
+		this.DS = DS;
 	}
 
 	public Message(int senderUID, MessageType messageType, List<String> partitions ) {
@@ -36,7 +36,7 @@ public class Message  implements Serializable, Comparable<Message>{
 	public Message(MessageType msgType) {
 		this.msgType = msgType;
 	}
-	
+
 	public Message(Message message) {
 		this(message.senderUID, message.msgType, message.versionNumber,message.SC, message.DS);
 	}
