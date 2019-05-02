@@ -74,7 +74,9 @@ public class FileRequestAccess extends Thread {
 			System.out.println("Not Distinguished Partition");
 			dsNode.sendMessageToNeighbors(MessageType.ABORT);
 			dsNode.getLockManager().releaseRequest();
-			dsNode.sendMessage(0, new Message(dsNode.getNodeUID(), MessageType.COMPLETION));
+			Message response = new Message(dsNode.getNodeUID(), MessageType.COMPLETION);
+			response.setRequestSatisfied(false);
+			dsNode.sendMessage(0, response);
 			System.out.println("Write unsuccessful");
 			System.out.println("VN= " + dsNode.VN + " SC= " + dsNode.SC);
 			System.out.println("Values inside DSi");
@@ -89,7 +91,9 @@ public class FileRequestAccess extends Thread {
 		System.out.println("Do_Update()");
 		Do_Update();
 		System.out.println("Write successful");
-		dsNode.sendMessage(0, new Message(dsNode.getNodeUID(), MessageType.COMPLETION));
+		Message response = new Message(dsNode.getNodeUID(), MessageType.COMPLETION);
+		response.setRequestSatisfied(true);
+		dsNode.sendMessage(0, response);
 		// }
 	}
 

@@ -79,7 +79,7 @@ public class Node {
 				int recipientUID = entry.getKey();
 				TCPClient client = entry.getValue();
 				try {
-					System.out.println("Sending " + msgType + " to Server: " + recipientUID);
+//					System.out.println("Sending " + msgType + " to Server: " + recipientUID);
 					client.getOutputWriter().writeObject(new Message(this.UID, msgType, Components));
 					// System.out.println("Connection Closed for UID:"+getsenderUID);
 				} catch (IOException e) {
@@ -93,7 +93,7 @@ public class Node {
 		synchronized (connectedClients) {
 			TCPClient client = connectedClients.get(UID);
 			try {
-				System.out.println("Sending Completion to UID: " + client.getServerUID());
+//				System.out.println("Sending Completion to UID: " + client.getServerUID());
 				client.getOutputWriter().writeObject(new Message(this.UID, MessageType.COMPLETION));
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -129,6 +129,7 @@ public class Node {
 
 	synchronized public void messageHandler(Message msg) {
 		if (msg.getMsgType() == MessageType.COMPLETION) {
+			System.out.println("Request successful = " + msg.getRequestSatisfied());
 			setCompletion(true);
 		}
 	}
@@ -145,7 +146,7 @@ public class Node {
 	}
 
 	public void waitForCompletion() {
-		System.out.println("Waiting for Completion common.Message");
+//		System.out.println("Waiting for Completion common.Message");
 		while (getCompletionStatus() == false) {
 			try {
 				Thread.sleep(10);

@@ -60,6 +60,8 @@ public class InvokeMain {
 			Thread.sleep(8000);
 
 			new FileRequestAccess(dsNode).InitiateAlgorithm();
+			//stop all threads
+
 			
 		}catch(Exception e){
 			e.printStackTrace();

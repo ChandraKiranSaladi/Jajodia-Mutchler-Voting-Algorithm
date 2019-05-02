@@ -50,7 +50,7 @@ public class TCPClient extends Thread{
 			out = new ObjectOutputStream(clientsocket.getOutputStream());
 			out.flush();
 		} catch (IOException e) {
-			System.out.println("in or out failed");
+//			System.out.println("in or out failed");
 			System.exit(-1);
 		}
 
@@ -70,7 +70,7 @@ public class TCPClient extends Thread{
 					// add all the connected clients
 					dsNode.addClient(this.serverUID,this);
 					
-					System.out.println("Text received from client: " + this.serverUID);
+//					System.out.println("Text received from client: " + this.serverUID);
 				}
 
 				else if (msg instanceof Message) {
@@ -96,7 +96,7 @@ public class TCPClient extends Thread{
 			out = new ObjectOutputStream(clientsocket.getOutputStream());
 			out.flush();
 			in = new ObjectInputStream(clientsocket.getInputStream());
-			System.out.println("After inputStream, listenSocket");
+//			System.out.println("After inputStream, listenSocket");
 		} catch (UnknownHostException e) {
 			System.out.println("Unknown host:" + serverHostName);
 			System.exit(1);
@@ -110,7 +110,7 @@ public class TCPClient extends Thread{
 
 		try {
 			// Send text to server
-			System.out.println("Sending HandShake message to server " + this.serverUID + ".....");
+//			System.out.println("Sending HandShake message to server " + this.serverUID + ".....");
 			String msg = "Hi!" + this.UID;
 			out.writeObject(msg);
 			out.flush();
@@ -128,7 +128,7 @@ public class TCPClient extends Thread{
 				// add received messages to Blocking queue
 				this.dsNode.messageHandler(message);
 				
-				System.out.println("Msg rx UID: " + message.getsenderUID()+" "+message.getMsgType());
+//				System.out.println("Msg rx UID: " + message.getsenderUID()+" "+message.getMsgType());
 			}
 		} catch (IOException | ClassNotFoundException e) {
 			System.out.println("failed transmission");

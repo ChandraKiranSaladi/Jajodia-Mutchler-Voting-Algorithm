@@ -21,9 +21,11 @@ public class FileRequestAccess {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            System.out.println("\nCurrent Partitions = " + String.join(",",Components));
 
             for (int j = 0; j < Components.size(); j++) {
                 String component = Components.get(j);
+                System.out.println("2 writes on partition " + component);
                 for (int k = 0; k < 2; k++) {
                     Random rand = new Random();
                     int index = rand.nextInt(component.length());
@@ -32,9 +34,9 @@ public class FileRequestAccess {
                     dsNode.waitForCompletion();
                 }
             }
-            for (int j : dsNode.uIDofNeighbors.keySet()) {
-                //dsNode.sendCompletion(j);
-            }
+        }
+        for (int j : dsNode.uIDofNeighbors.keySet()) {
+            dsNode.sendCompletion(j);
         }
     }
 }

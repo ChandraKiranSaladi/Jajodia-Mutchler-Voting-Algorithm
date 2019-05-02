@@ -13,6 +13,7 @@ public class Message  implements Serializable, Comparable<Message>{
 	private int SC = 8;
 	private HashSet<Integer> DS;
 	private List<String> partitions;
+	private boolean requestSatisfied;
 
 	public Message(int senderUID, MessageType msgType) {
 		this.senderUID = senderUID;
@@ -80,5 +81,13 @@ public class Message  implements Serializable, Comparable<Message>{
 			return -1;
 		else
 			return 1;
+	}
+
+	public void setRequestSatisfied(boolean requestSatisfied) {
+		this.requestSatisfied = requestSatisfied;
+	}
+
+	public boolean getRequestSatisfied() {
+		return false;
 	}
 }
