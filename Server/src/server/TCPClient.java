@@ -1,3 +1,5 @@
+package server;
+
 import java.io.*;
 import java.net.*;
 
@@ -9,6 +11,7 @@ public class TCPClient extends Thread{
 	ObjectInputStream in;
 	ObjectOutputStream out;
     Node dsNode;
+    boolean flag;
     
 	public TCPClient(int UID, int serverPort, String serverHostName, String clientHostName, int serverUID , Node _dsNode) {
 		this.serverHostName = serverHostName;
@@ -41,6 +44,7 @@ public class TCPClient extends Thread{
 	}
 	
 	public void run() {
+		// If using server.TCPClient as a ClientRequestHandler
 		try {
 			in = new ObjectInputStream(clientsocket.getInputStream());
 			out = new ObjectOutputStream(clientsocket.getOutputStream());
@@ -50,41 +54,39 @@ public class TCPClient extends Thread{
 			System.exit(-1);
 		}
 
-		while (true) {
+		while (!Thread.interrupted()) {
 			try {
 				// Read data from client
 
 				// InitialHandShake read
 				Object msg = in.readObject();
-
 				if (msg instanceof String) {
 					String message = msg.toString();
 					String[] msgArr = message.split("!");
 					// Client UID is the UID from which we received the request
 					this.serverUID = Integer.parseInt(msgArr[1]);
 					
-					// add all the connected clients
-					dsNode.addClient(this.serverUID,this);
+					// add the client to connectedClients
+					dsNode.addClient(this.serverUID, this);
 					
 					System.out.println("Text received from client: " + this.serverUID);
 				}
 
 				else if (msg instanceof Message) {
 					Message broadcastMessage = (Message) msg;
-					// add received messages to Blocking queue
+					// Increment Lamport Clock &  add received messages to Blocking queue
 					System.out.println("Msg rx UID: " + broadcastMessage.getsenderUID()+" "+broadcastMessage.getMsgType());
-					this.dsNode.addMessageToQueue(broadcastMessage);
+					this.dsNode.messageHandler(broadcastMessage);
 				}
 
 			} catch (IOException | ClassNotFoundException e) {
-				e.printStackTrace();
 				System.out.println("Read failed");
 				System.exit(-1);
 			}
 		}
 	}
 	
-	// If using TCPClient as a Client Request Sender
+	// If using server.TCPClient as a Client Request Sender
 	public void listenSocket() {
 		// Create socket connection
 		try {
@@ -131,5 +133,9 @@ public class TCPClient extends Thread{
 			System.exit(1);
 		}
 
+	}
+
+	public void close() throws IOException {
+		clientsocket.close();
 	}
 }

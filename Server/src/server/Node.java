@@ -1,6 +1,7 @@
+package server;
+
 import java.util.*;
 import java.io.IOException;
-import java.net.*;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -112,7 +113,7 @@ public class Node {
 		}
 		else if(msgType == MessageType.VOTE_REQUEST){
 			try {
-				System.out.println("Message Handler. Vote_Request");
+				System.out.println("server.Message Handler. Vote_Request");
 				lockManager.lockRequest();
 				Message message = new Message(this.UID,MessageType.VOTE_RESPONSE,this.VN,this.SC,this.DS);
 				sendMessage(msg.getsenderUID(),message);
@@ -140,7 +141,7 @@ public class Node {
 		}else if(msgType == MessageType.REQUEST){
 			try {
 //				lockManager.lockRequest();
-				System.out.println("MessageHandler. MessageType: "+msg.getMsgType());
+				System.out.println("MessageHandler. server.MessageType: "+msg.getMsgType());
 				fileRequestAccess.addMessage(msg);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -224,7 +225,7 @@ public class Node {
 
 	private void partition(List<String> partitions){
 		synchronized (connectedClients) {
-			System.out.print("Node.Parition Method");
+			System.out.print("server.Node.Parition Method");
 			for (String partition : partitions) {
 				if (partition.contains("" + getNodeUID())) {
 					for (char server : partition.toCharArray()) {

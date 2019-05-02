@@ -1,3 +1,5 @@
+package server;
+
 public class Lock {
     private static Object lock;
     static {

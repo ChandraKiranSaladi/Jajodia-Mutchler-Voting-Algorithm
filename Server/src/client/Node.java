@@ -1,7 +1,8 @@
+package client;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.io.IOException;
@@ -141,7 +142,7 @@ public class Node {
 	}
 
 	public void waitForCompletion() {
-		System.out.println("Waiting for Completion Message");
+		System.out.println("Waiting for Completion client.Message");
 		while (getCompletionStatus() == false) {
 			try {
 				Thread.sleep(10);

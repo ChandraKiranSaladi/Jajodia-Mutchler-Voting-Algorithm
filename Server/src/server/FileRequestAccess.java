@@ -1,9 +1,8 @@
-import java.io.FileWriter;
-import java.io.IOException;
+package server;
+
 import java.util.HashSet;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -29,7 +28,7 @@ public class FileRequestAccess extends Thread {
 			try {
 				System.out.println("waiting on queue");
 				Message message = messages.take();
-				System.out.println("Message with msgType " + message.getMsgType());
+				System.out.println("server.Message with msgType " + message.getMsgType());
 				if (message.getMsgType() == MessageType.ABORT) {
 					break;
 				}
@@ -60,9 +59,9 @@ public class FileRequestAccess extends Thread {
 		 * 
 		 */
 
-		// synchronized (Lock.getLockObject()) {
+		// synchronized (server.Lock.getLockObject()) {
 		dsNode.getLockManager().lockRequest();
-		System.out.println("Received Lock");
+		System.out.println("Received server.Lock");
 		dsNode.voteResponseMessages.clear();
 		System.out.println("Vote requests sent");
 		dsNode.sendMessageToNeighbors(MessageType.VOTE_REQUEST);
@@ -165,7 +164,7 @@ public class FileRequestAccess extends Thread {
 		if (!I.contains(dsNode.UID)) {
 			dsNode.VN = M;
 		}
-		System.out.println("New VN of this Node: " + dsNode.VN);
+		System.out.println("New VN of this server.Node: " + dsNode.VN);
 	}
 
 	private void Do_Update() {

@@ -1,7 +1,9 @@
+package server;
+
 import java.io.*;
 import java.net.*;
 
-public class TCPServer {
+public class TCPServer extends Thread{
 	String HostName;
 	int PortNumber, UID;
 	ServerSocket serversocket;
@@ -15,8 +17,13 @@ public class TCPServer {
 
 	public TCPServer(Node _dsNode) {
 		// hard coded local host for now
-		this(_dsNode.UID, _dsNode.port, "localhost");
+		this(_dsNode.UID, _dsNode.port, _dsNode.getNodeHostName());
 		this.dsNode = _dsNode;
+	}
+
+	@Override
+	public void run(){
+		listenSocket();
 	}
 
 	public void listenSocket() {
@@ -24,10 +31,10 @@ public class TCPServer {
 			serversocket = new ServerSocket(PortNumber);
 		} catch (IOException e) {
 			// System.out.println("Could not listen on port 4444");
-			System.out.println(e);
+			e.printStackTrace();
 			System.exit(-1);
 		}
-		while (true) {
+		while (!Thread.interrupted()) {
 			TCPClient reqHandler;
 			try {
 				// server.accept returns a client connection
@@ -45,4 +52,7 @@ public class TCPServer {
 		}
 	}
 
+	public void close() throws IOException {
+		serversocket.close();
+	}
 }

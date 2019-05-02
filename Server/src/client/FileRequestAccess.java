@@ -1,3 +1,4 @@
+package client;
 
 import java.util.List;
 import java.util.Random;
@@ -31,7 +32,9 @@ public class FileRequestAccess {
                     dsNode.waitForCompletion();
                 }
             }
-
+            for (int j : dsNode.uIDofNeighbors.keySet()) {
+                dsNode.sendCompletion(j);
+            }
         }
     }
 }

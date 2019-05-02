@@ -1,3 +1,5 @@
+package server;
+
 public class LockManager {
     private boolean locked;
 
@@ -14,7 +16,7 @@ public class LockManager {
     }
 
     public synchronized void releaseRequest(){
-    	System.out.println("Releasing Locked in LockManager");
+    	System.out.println("Releasing Locked in server.LockManager");
         locked = false;
         notifyAll();
     }

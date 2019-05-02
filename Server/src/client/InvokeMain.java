@@ -1,3 +1,5 @@
+package client;
+
 import java.net.InetAddress;
 
 public class InvokeMain {
@@ -70,7 +72,7 @@ public class InvokeMain {
 		Node dsNode = new Node();
 		try {
 			dsNode = ParseConfigFile.read(
-					"src/readFile.txt",
+					"src/readFile-client.txt",
 							InetAddress.getLocalHost().getHostName(), hostNumIndex);
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to get nodeList", e);
