@@ -18,7 +18,7 @@ public class InvokeMain {
 
 			System.out.println("Server started and listening to client requests.........");
 
-			Thread.sleep(5000);
+			Thread.sleep(20000);
 
 			// Iterate through the node neighbors to send the Client Requests
 			dsNode.uIDofNeighbors.entrySet().forEach((neighbour) -> {

@@ -33,7 +33,7 @@ public class FileRequestAccess {
                 }
             }
             for (int j : dsNode.uIDofNeighbors.keySet()) {
-                dsNode.sendCompletion(j);
+                //dsNode.sendCompletion(j);
             }
         }
     }
