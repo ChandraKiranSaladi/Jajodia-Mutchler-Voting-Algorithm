@@ -90,7 +90,7 @@ public class FileRequestAccess extends Thread {
 		Catch_Up();
 		System.out.println("Do_Update()");
 		Do_Update();
-		System.out.println("Write successful");
+		System.out.println("Write successful. Version number = "+dsNode.VN);
 		Message response = new Message(dsNode.getNodeUID(), MessageType.COMPLETION);
 		response.setRequestSatisfied(true);
 		dsNode.sendMessage(0, response);

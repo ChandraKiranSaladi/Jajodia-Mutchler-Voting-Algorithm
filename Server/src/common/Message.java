@@ -88,6 +88,6 @@ public class Message  implements Serializable, Comparable<Message>{
 	}
 
 	public boolean getRequestSatisfied() {
-		return false;
+		return requestSatisfied;
 	}
 }

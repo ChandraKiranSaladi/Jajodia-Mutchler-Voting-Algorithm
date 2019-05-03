@@ -46,7 +46,7 @@ public class TCPServer extends Thread{
 				t.start();
 
 			} catch (IOException e) {
-				System.out.println("Accept failed");
+//				System.out.println("Accept failed");
 				System.exit(-1);
 			}
 		}

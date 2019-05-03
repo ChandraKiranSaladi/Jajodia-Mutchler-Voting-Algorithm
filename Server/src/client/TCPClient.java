@@ -131,7 +131,7 @@ public class TCPClient extends Thread{
 //				System.out.println("Msg rx UID: " + message.getsenderUID()+" "+message.getMsgType());
 			}
 		} catch (IOException | ClassNotFoundException e) {
-			System.out.println("failed transmission");
+//			System.out.println("failed transmission");
 			System.exit(1);
 		}
 

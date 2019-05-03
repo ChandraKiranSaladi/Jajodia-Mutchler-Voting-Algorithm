@@ -15,7 +15,7 @@ public class InvokeMain {
 			// Integer.parseInt(args[0]);
 			int hostNumIndex = Integer.parseInt(args[0]);;
 
-			Node dsNode = BuildNode(hostNumIndex);
+			Node dsNode = BuildNode(hostNumIndex,args[1]);
 
 			System.out.println("Initializing Server with UID: " + dsNode.UID);
 
@@ -70,11 +70,11 @@ public class InvokeMain {
 
 	}
 
-	public static Node BuildNode(int hostNumIndex) {
+	public static Node BuildNode(int hostNumIndex, String configFile) {
 		Node dsNode = new Node();
 		try {
 			dsNode = ParseConfigFile.read(
-					"src/readFile-client.txt",
+					configFile,
 							InetAddress.getLocalHost().getHostName(), hostNumIndex);
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to get nodeList", e);
